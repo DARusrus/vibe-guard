@@ -1,0 +1,23 @@
+rules:
+  - id: vibeguard-js-missing-helmet
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >
+      Express app initialization without Helmet middleware may omit baseline
+      security headers and hardening defaults.
+    metadata:
+      cwe: "CWE-16: Configuration"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Install and configure Helmet with app.use(helmet()) near app startup,
+        then tune CSP and other headers for your deployment context.
+      ai_context: >
+        AI-generated Express starter code often prioritizes route setup and
+        skips middleware hardening unless explicitly prompted.
+      severity_label: "MEDIUM"
+      rule_category: "security_headers"
+    patterns:
+      - pattern: $APP = express()
+      - pattern-not-inside: |
+          $APP.use(helmet(...))

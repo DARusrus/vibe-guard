@@ -1,0 +1,28 @@
+rules:
+  - id: vibeguard-python-token-in-url
+    languages: [python]
+    severity: WARNING
+    message: >
+      Embedding sensitive tokens in URL query strings can leak secrets through
+      logs, browser history, and referrer headers.
+    metadata:
+      cwe: "CWE-598: Use of GET Request Method With Sensitive Query Strings"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Prefer POST bodies or short-lived path tokens and avoid secret query
+        parameters in user-facing links or redirects.
+      ai_context: >
+        AI-generated reset flows frequently build links with ?token=... because
+        this pattern is straightforward and common in tutorial snippets.
+      severity_label: "HIGH"
+      rule_category: "token_exposure"
+    patterns:
+      - pattern-either:
+          - pattern: f"...?...={$TOKEN}..."
+          - pattern: f"...?...token={$TOKEN}..."
+          - pattern: f"...?...key={$TOKEN}..."
+          - pattern: f"...?...secret={$TOKEN}..."
+      - metavariable-regex:
+          metavariable: $TOKEN
+          regex: "(?i).*(token|key|password|secret|api_key|reset|verify|confirm).*"

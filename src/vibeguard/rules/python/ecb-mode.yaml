@@ -1,0 +1,27 @@
+rules:
+  - id: vibeguard-python-ecb-mode
+    languages: [python]
+    severity: ERROR
+    message: >
+      AES ECB mode leaks plaintext structure and should not be used for data
+      confidentiality.
+    metadata:
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use AES-GCM or ChaCha20-Poly1305 with authenticated encryption,
+        for example AES.new(key, AES.MODE_GCM).
+      ai_context: >
+        AI models pick ECB because it is the shortest encryption snippet and
+        requires no IV handling, but it is cryptographically unsafe.
+      severity_label: "CRITICAL"
+      rule_category: "crypto"
+    pattern-either:
+      - pattern: AES.new($KEY, AES.MODE_ECB, ...)
+      - pattern: AES.new($KEY, AES.MODE_ECB)
+      - patterns:
+          - pattern: Cipher.new($KEY, $MODE, ...)
+          - metavariable-regex:
+              metavariable: $MODE
+              regex: ".*ECB.*"

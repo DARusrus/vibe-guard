@@ -1,0 +1,55 @@
+rules:
+  - id: vibeguard-js-prototype-pollution-proto-assignment
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Prototype pollution risk from writing through __proto__.
+    metadata:
+      cwe: "CWE-1321"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Validate that merge input does not contain __proto__, constructor,
+        or prototype keys. Use structuredClone() for deep copies instead of
+        recursive merge.
+      ai_context: >
+        AI models write utility functions like deepMerge() without checking
+        for __proto__ or constructor keys in user input.
+      severity_label: "HIGH"
+      rule_category: "prototype_pollution"
+    pattern-either:
+      - pattern: $OBJ["__proto__"][$KEY] = $VAL
+      - pattern: $OBJ.__proto__[$KEY] = $VAL
+
+  - id: vibeguard-js-prototype-pollution-unsafe-assign
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Object.assign() with user-controlled merge input can allow prototype pollution.
+    metadata:
+      cwe: "CWE-1321"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Validate that merge input does not contain __proto__, constructor,
+        or prototype keys. Use structuredClone() for deep copies instead of
+        recursive merge.
+      ai_context: >
+        AI models write utility functions like deepMerge() without checking
+        for __proto__ or constructor keys in user input.
+      severity_label: "HIGH"
+      rule_category: "prototype_pollution"
+    pattern-either:
+      - pattern: Object.assign($OBJ, $REQ.body)
+      - patterns:
+          - pattern-inside: |
+              function $FUNC(..., $USER_DATA, ...) {
+                ...
+              }
+          - pattern: Object.assign($OBJ, $USER_DATA)
+      - patterns:
+          - pattern-inside: |
+              ($USER_DATA) => {
+                ...
+              }
+          - pattern: Object.assign($OBJ, $USER_DATA)

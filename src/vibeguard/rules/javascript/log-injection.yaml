@@ -1,0 +1,23 @@
+rules:
+  - id: vibeguard-js-log-injection
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >
+      Interpolating untrusted values in log messages can permit log forging
+      and terminal control sequence injection.
+    metadata:
+      cwe: "CWE-117: Improper Output Neutralization for Logs"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use structured logger fields and sanitize untrusted inputs before
+        writing logs. Avoid template interpolation for raw request values.
+      ai_context: >
+        AI models heavily favor template literals for readable logging and
+        often do not model security properties of log ingestion systems.
+      severity_label: "HIGH"
+      rule_category: "log_injection"
+    pattern-either:
+      - pattern: console.log(`...${$VAL}...`)
+      - pattern: logger.$METHOD(`...${$VAL}...`)
+      - pattern: req.log.$METHOD(`...${$VAL}...`)

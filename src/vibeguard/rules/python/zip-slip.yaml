@@ -1,0 +1,40 @@
+rules:
+  - id: vibeguard-python-zip-slip-zipfile
+    languages: [python]
+    severity: ERROR
+    message: >
+      extractall() on zip archives without member path validation can allow
+      path traversal outside the intended destination.
+    metadata:
+      cwe: "CWE-22"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Validate each archive member against the destination root before
+        extraction, or use a safe extraction helper that rejects ../ paths.
+      ai_context: >
+        AI-generated archive handlers often choose extractall() one-liners,
+        because they are concise and common in quick utility examples.
+      severity_label: "CRITICAL"
+      rule_category: "path_traversal"
+    pattern: zipfile.ZipFile($FILE).extractall($DIR)
+
+  - id: vibeguard-python-zip-slip-tarfile
+    languages: [python]
+    severity: ERROR
+    message: >
+      tarfile extractall() without path normalization checks can overwrite
+      files outside the target extraction directory.
+    metadata:
+      cwe: "CWE-22"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Validate target paths with os.path.abspath joins before extracting,
+        and reject members that escape the destination root.
+      ai_context: >
+        AI assistants frequently reuse tarfile.extractall snippets from docs
+        without adding traversal checks for untrusted archives.
+      severity_label: "CRITICAL"
+      rule_category: "path_traversal"
+    pattern: tarfile.open($FILE).extractall($DIR)

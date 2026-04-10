@@ -1,0 +1,28 @@
+rules:
+  - id: vibeguard-python-open-redirect
+    languages: [python]
+    severity: WARNING
+    message: >
+      Redirecting to unvalidated user-controlled targets can enable phishing
+      and token leakage through open redirect chains.
+    metadata:
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Validate redirect targets with url_parse/url_for allowlists and reject
+        external netloc values before calling redirect().
+      ai_context: >
+        AI-generated auth flows often use request.args.get("next") directly,
+        because this pattern is common in simple post-login examples.
+      severity_label: "HIGH"
+      rule_category: "open_redirect"
+    pattern-either:
+      - pattern: redirect(request.args.get("next"))
+      - pattern: redirect(request.form.get("next"))
+      - pattern: redirect(request.args.get("redirect_to"))
+      - pattern: redirect($TARGET)
+      - pattern: make_response(redirect($TARGET))
+    metavariable-regex:
+      metavariable: $TARGET
+      regex: "(?i).*(next|redirect_to|return_url|url|destination|request\\.(args|form|json)).*"

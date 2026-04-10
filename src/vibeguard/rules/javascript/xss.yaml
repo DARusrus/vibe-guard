@@ -1,0 +1,47 @@
+rules:
+  - id: vibeguard-js-xss-inner-html
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Potential DOM XSS by assigning untrusted input to innerHTML.
+    metadata:
+      cwe: "CWE-79"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use textContent for plain text, or DOMPurify.sanitize()
+        before assigning to innerHTML.
+      ai_context: >
+        AI-generated UI snippets often assign request data directly to innerHTML
+        because examples optimize for quick rendering over sanitization.
+      severity_label: "HIGH"
+      rule_category: "xss"
+    patterns:
+      - pattern: $EL.innerHTML = $USER_INPUT
+      - pattern-not: $EL.innerHTML = "..."
+      - pattern-not: $EL.innerHTML = '...'
+
+  - id: vibeguard-js-xss-dangerously-set-inner-html
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Potential React XSS via dangerouslySetInnerHTML with unsanitized input.
+    metadata:
+      cwe: "CWE-79"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use a sanitization library like DOMPurify before passing content
+        to dangerouslySetInnerHTML.
+      ai_context: >
+        AI-generated React code frequently uses dangerouslySetInnerHTML for
+        rich text rendering without adding sanitization guards.
+      severity_label: "HIGH"
+      rule_category: "xss"
+    patterns:
+      - pattern: |
+          <$EL dangerouslySetInnerHTML={{ __html: $INPUT }} />
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{ __html: "..." }} />
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{ __html: '...' }} />

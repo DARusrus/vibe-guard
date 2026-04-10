@@ -1,0 +1,30 @@
+rules:
+  - id: vibeguard-python-insecure-random
+    languages: [python]
+    severity: ERROR
+    message: >
+      Using random module output for security-sensitive secrets produces
+      predictable tokens and verification codes.
+    metadata:
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use the secrets module for security values: secrets.token_hex(32),
+        secrets.randbelow(1_000_000), or secrets.choice for token alphabets.
+      ai_context: >
+        AI models default to random.randint and random.choice examples for OTPs
+        because those snippets are far more common in basic training content.
+      severity_label: "CRITICAL"
+      rule_category: "crypto"
+    patterns:
+      - pattern-either:
+          - pattern: $NAME = random.randint(...)
+          - pattern: $NAME = random.randrange(...)
+          - pattern: $NAME = random.choice(...)
+          - pattern: $NAME = random.choices(...)
+          - pattern: $NAME = random.random()
+          - pattern: $NAME = random.sample(...)
+      - metavariable-regex:
+          metavariable: $NAME
+          regex: "(?i).*(token|otp|code|pin|key|nonce|salt|iv|reset_token|verification_code|csrf_token).*"

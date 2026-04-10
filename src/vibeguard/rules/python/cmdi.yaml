@@ -1,0 +1,25 @@
+rules:
+  - id: vibeguard-python-cmdi-shell-true
+    languages: [python]
+    severity: ERROR
+    message: >
+      Command injection risk via subprocess call with shell=True and
+      dynamic command string. User input may be injected into the shell command.
+    metadata:
+      cwe: "CWE-78: Improper Neutralization of Special Elements in OS Command"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use a list of arguments instead of a shell string. Replace
+        subprocess.run(f"cmd {user_input}", shell=True) with
+        subprocess.run(["cmd", user_input], shell=False).
+      ai_context: >
+        AI models generate subprocess calls with shell=True and f-strings
+        because it mirrors simple shell scripting patterns from training
+        data, ignoring the injection risk of unsanitized interpolation.
+      severity_label: "HIGH"
+      rule_category: "cmdi"
+    pattern-either:
+      - pattern: subprocess.$FUNC(f"...", ..., shell=True, ...)
+      - pattern: subprocess.$FUNC("..." + $CMD, ..., shell=True, ...)
+      - pattern: subprocess.$FUNC("..." % ..., ..., shell=True, ...)

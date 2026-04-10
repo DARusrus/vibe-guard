@@ -1,0 +1,22 @@
+rules:
+  - id: vibeguard-python-html-injection
+    languages: [python]
+    severity: WARNING
+    message: >
+      Returning HTML built from interpolated unescaped variables can enable
+      HTML/script injection and page content spoofing.
+    metadata:
+      cwe: "CWE-80: Improper Neutralization of Script-Related HTML Tags"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Render HTML via Jinja templates with auto-escaping, or wrap each
+        untrusted value in markupsafe.escape before interpolation.
+      ai_context: >
+        AI models often return inline f-string HTML for quick demos and omit
+        escaping safeguards that frameworks usually provide in templates.
+      severity_label: "HIGH"
+      rule_category: "html_injection"
+    patterns:
+      - pattern: return f"<$TAG ...>{$VAR}</$TAG>"
+      - pattern-not: return f"<$TAG ...>{escape($VAR)}</$TAG>"

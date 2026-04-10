@@ -1,0 +1,22 @@
+rules:
+  - id: vibeguard-shell-missing-errexit
+    languages: [bash]
+    severity: WARNING
+    message: >
+      Shell script missing strict mode can continue after failing commands and
+      execute dangerous follow-up operations with partial state.
+    metadata:
+      cwe: "CWE-390: Detection of Error Condition Without Action"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Add set -euo pipefail near the top of scripts to stop on errors,
+        reject unset variables, and fail pipelines correctly.
+      ai_context: >
+        AI-generated shell scripts are usually step-by-step command lists and
+        often omit strict mode directives unless explicitly requested.
+      severity_label: "HIGH"
+      rule_category: "script_hardening"
+    patterns:
+      - pattern-regex: "(?m)^#!\\s*/bin/(bash|sh)"
+      - pattern-not-regex: "(?m)^set\\s+-e(\\s|$)|^set\\s+-euo\\s+pipefail"

@@ -1,0 +1,26 @@
+rules:
+  - id: vibeguard-python-plaintext-sensitive-fields
+    languages: [python]
+    severity: WARNING
+    message: >
+      Sensitive fields stored as plain String/Text columns increase the risk
+      of cleartext disclosure from backups, logs, and database compromise.
+    metadata:
+      cwe: "CWE-312: Cleartext Storage of Sensitive Information"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Encrypt sensitive ORM fields at rest using an encrypted type wrapper
+        or field-level application crypto, and store only masked values when possible.
+      ai_context: >
+        AI-generated ORM models default to String columns for all attributes
+        because tutorial datasets rarely include field-level encryption examples.
+      severity_label: "HIGH"
+      rule_category: "data_protection"
+    patterns:
+      - pattern-either:
+          - pattern: $FIELD = Column(String, ...)
+          - pattern: $FIELD = Column(Text, ...)
+      - metavariable-regex:
+          metavariable: $FIELD
+          regex: "(?i).*(ssn|social_security|credit_card|card_number|cvv|bank_account|routing_number|medical_record|health_data|biometric).*"

@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-gha-unpinned-action
+    languages: [yaml]
+    severity: WARNING
+    message: >
+      GitHub Actions using mutable tags or branches instead of pinned commit
+      SHAs can be silently redirected to malicious code.
+    metadata:
+      cwe: "CWE-1357: Reliance on Insufficiently Trustworthy Component"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Pin every action to a full 40-character commit SHA and use automated
+        dependency updates to rotate SHAs safely.
+      ai_context: >
+        AI-generated CI examples commonly use @vN or @main references because
+        they are readable, but they are mutable and risky in production.
+      severity_label: "HIGH"
+      rule_category: "supply_chain"
+    pattern-regex: "(?m)^\\s*uses:\\s+[^@\\n]+@(?![0-9a-fA-F]{40}\\b).+"

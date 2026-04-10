@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-js-client-side-pricing
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Posting client-calculated price/amount values to payment endpoints can
+      allow tampering and underpayment attacks.
+    metadata:
+      cwe: "CWE-602"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Send only product identifiers and quantity; compute totals on the
+        server from trusted catalog pricing before charging users.
+      ai_context: >
+        AI-generated checkout code frequently reuses UI state totals and sends
+        them directly to backend payment APIs for convenience.
+      severity_label: "CRITICAL"
+      rule_category: "business_logic"
+    pattern-regex: "(?s)(price|total|amount|cost|subtotal)\\s*=.*(fetch|axios\\.post)\\s*\\("

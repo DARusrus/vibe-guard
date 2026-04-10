@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-js-client-side-auth
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Enforcing authorization through client-side state checks is bypassable
+      and cannot provide server-side security guarantees.
+    metadata:
+      cwe: "CWE-602: Client-Side Enforcement of Server-Side Security"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Enforce permissions on every server/API endpoint. Keep client checks
+        for UI visibility only and return 403 on unauthorized server requests.
+      ai_context: >
+        AI models often implement auth as front-end boolean state because
+        component rendering examples dominate training data.
+      severity_label: "CRITICAL"
+      rule_category: "authorization"
+    pattern-regex: "\\{\\s*(isAdmin|isAuthenticated|userRole|isLoggedIn|hasPermission)\\s*&&\\s*<"

@@ -1,0 +1,24 @@
+rules:
+  - id: vibeguard-js-supabase-service-role
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Using Supabase service role keys in browser-executed code bypasses row
+      level security and exposes administrative database access.
+    metadata:
+      cwe: "CWE-798"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Restrict service role keys to trusted server runtime only and use the
+        anon key in any client-side bundle or browser-executed context.
+      ai_context: >
+        AI-generated Supabase examples often copy admin snippets because they
+        work quickly, unintentionally exposing overprivileged secrets.
+      severity_label: "CRITICAL"
+      rule_category: "secrets"
+    patterns:
+      - pattern: createClient($URL, process.env.$KEY)
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: "(?i).*(SERVICE_ROLE|SUPABASE_SERVICE).*"

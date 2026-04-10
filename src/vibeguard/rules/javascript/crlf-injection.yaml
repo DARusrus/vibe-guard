@@ -1,0 +1,23 @@
+rules:
+  - id: vibeguard-js-crlf-injection
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Setting HTTP headers from unsanitized user input can allow CRLF-based
+      response splitting and header injection.
+    metadata:
+      cwe: "CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Strip \r and \n characters and validate allowed header values before
+        assigning request-derived data into response headers.
+      ai_context: >
+        AI-generated API handlers frequently map req.query values directly to
+        response headers for convenience without newline sanitation.
+      severity_label: "HIGH"
+      rule_category: "header_injection"
+    pattern-either:
+      - pattern: res.setHeader($H, req.query.$V)
+      - pattern: res.header($H, req.query.$V)
+      - pattern: response.set($H, req.query.$V)

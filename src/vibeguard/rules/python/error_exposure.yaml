@@ -1,0 +1,70 @@
+rules:
+  - id: vibeguard-python-verbose-error-jsonify
+    languages: [python]
+    severity: WARNING
+    message: >
+      Verbose error response exposes exception details to the client.
+      Stack traces and error messages can reveal internal implementation
+      details useful to attackers.
+    metadata:
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Log the full error internally with logging.exception() and return
+        a generic error message to the client. Replace
+        return jsonify({"error": str(e)}) with
+        return jsonify({"error": "An internal error occurred"}), 500
+      ai_context: >
+        AI models return str(e) in JSON error responses because training
+        examples prioritize debugging convenience over production security,
+        and generic error handling is seen as less helpful to developers.
+      severity_label: "MEDIUM"
+      rule_category: "error_exposure"
+    pattern: |
+      return jsonify({"error": str($E)})
+
+  - id: vibeguard-python-verbose-error-traceback
+    languages: [python]
+    severity: WARNING
+    message: >
+      Full traceback exposed in HTTP response body. Stack traces reveal
+      file paths, library versions, and internal logic to potential attackers.
+    metadata:
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Never include traceback.format_exc() in API responses. Log it
+        internally with logging.exception() and return a generic message.
+      ai_context: >
+        AI models include traceback.format_exc() in error responses because
+        training data shows this pattern for debugging Flask and FastAPI
+        applications, without distinguishing development from production.
+      severity_label: "MEDIUM"
+      rule_category: "error_exposure"
+    pattern: |
+      return jsonify({..., "traceback": traceback.format_exc(), ...})
+
+  - id: vibeguard-python-verbose-error-fastapi
+    languages: [python]
+    severity: WARNING
+    message: >
+      FastAPI error response exposes exception details. Returning str(e)
+      in the detail field reveals internal error information to clients.
+    metadata:
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Log the full error internally and return a generic message.
+        Replace return {"detail": str(e)} with
+        return {"detail": "An internal error occurred"}.
+      ai_context: >
+        AI models return str(e) in FastAPI responses because training
+        examples show this as the standard error handling pattern,
+        without considering information leakage in production.
+      severity_label: "MEDIUM"
+      rule_category: "error_exposure"
+    pattern: |
+      return {"detail": str($E)}

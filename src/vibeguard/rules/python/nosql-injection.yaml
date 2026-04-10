@@ -1,0 +1,31 @@
+rules:
+  - id: vibeguard-python-nosql-injection
+    languages: [python]
+    severity: ERROR
+    message: >
+      Passing untrusted objects directly into MongoDB query filters can allow
+      operator injection such as $gt and $where.
+    metadata:
+      cwe: "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Build allowlisted filter objects field by field and validate types.
+        Use explicit dictionaries such as {"email": request.json["email"]}
+        instead of passing request.json or raw parameters directly.
+      ai_context: >
+        AI models often map REST body objects straight into find() calls,
+        missing that MongoDB filter operators can be attacker-controlled.
+      severity_label: "CRITICAL"
+      rule_category: "nosql_injection"
+    pattern-either:
+      - pattern: $COLLECTION.find(request.json)
+      - pattern: $COLLECTION.find_one(request.json)
+      - pattern: $COLLECTION.update_one(request.json, ...)
+      - pattern: $COLLECTION.delete_one(request.json)
+      - pattern: $COLLECTION.find(request.form)
+      - pattern: $COLLECTION.find_one(request.form)
+      - pattern: |
+          $COLLECTION.find({"$OP": $USER_INPUT})
+      - pattern: |
+          $COLLECTION.find_one({"$OP": $USER_INPUT})

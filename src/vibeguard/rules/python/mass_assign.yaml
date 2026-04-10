@@ -1,0 +1,52 @@
+rules:
+  - id: vibeguard-python-mass-assignment-create
+    languages: [python]
+    severity: WARNING
+    message: >
+      Mass assignment vulnerability. ORM model is created or updated
+      directly from unsanitized request data without field filtering.
+    metadata:
+      cwe: "CWE-915: Improperly Controlled Modification of Dynamically-Determined Object Attributes"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Explicitly list allowed fields using a schema or allowlist instead
+        of passing request data directly to model constructors. Example:
+        allowed = {k: v for k, v in data.items() if k in ALLOWED_FIELDS};
+        user = User(**allowed)
+      ai_context: >
+        AI models pass request.json or request.get_json() directly to ORM
+        model constructors because it produces concise, working code, but
+        this allows attackers to set privileged fields like is_admin.
+      severity_label: "HIGH"
+      rule_category: "mass_assign"
+    pattern-either:
+      - pattern: $MODEL(**request.json)
+      - pattern: $MODEL(**request.get_json())
+      - pattern: $MODEL(**request.form)
+
+  - id: vibeguard-python-mass-assignment-update
+    languages: [python]
+    severity: WARNING
+    message: >
+      Mass assignment via dict update from unsanitized request data.
+      Attacker-controlled fields can overwrite internal model attributes.
+    metadata:
+      cwe: "CWE-915: Improperly Controlled Modification of Dynamically-Determined Object Attributes"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Explicitly list allowed fields before updating. Example:
+        allowed = {k: v for k, v in data.items() if k in ALLOWED_FIELDS};
+        instance.__dict__.update(allowed)
+      ai_context: >
+        AI models use __dict__.update() or model.update() with raw request
+        data because it is a concise pattern seen in training data,
+        ignoring the risk of overwriting protected model attributes.
+      severity_label: "HIGH"
+      rule_category: "mass_assign"
+    pattern-either:
+      - pattern: $INSTANCE.__dict__.update(request.json)
+      - pattern: $INSTANCE.__dict__.update(request.get_json())
+      - pattern: $INSTANCE.update(**request.json)
+      - pattern: $INSTANCE.update(**request.get_json())

@@ -1,0 +1,27 @@
+rules:
+  - id: vibeguard-python-log-injection
+    languages: [python]
+    severity: WARNING
+    message: >
+      Logging user-controlled values via f-strings can enable log forgery
+      and terminal escape injection in downstream log processors.
+    metadata:
+      cwe: "CWE-117: Improper Output Neutralization for Logs"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use structured logging with extra fields instead of direct interpolation,
+        for example logger.info("User action", extra={"username": username}).
+        Never format untrusted data directly into the log message.
+      ai_context: >
+        AI models prioritize readable f-string logs and frequently interpolate
+        request values directly, overlooking log injection and forged entries.
+      severity_label: "HIGH"
+      rule_category: "log_injection"
+    patterns:
+      - pattern-either:
+          - pattern: logger.$METHOD(f"...{$VAR}...")
+          - pattern: logging.$METHOD(f"...{$VAR}...")
+      - metavariable-regex:
+          metavariable: $VAR
+          regex: "^(?!(__name__|__version__|[A-Z0-9_]+)$).+"

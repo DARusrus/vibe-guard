@@ -1,0 +1,26 @@
+rules:
+  - id: vibeguard-python-path-traversal-unsanitized
+    languages: [python]
+    severity: ERROR
+    message: >
+      Path traversal vulnerability. User-controlled input is used directly
+      in a file path without sanitization, allowing directory traversal attacks.
+    metadata:
+      cwe: "CWE-22: Improper Limitation of a Pathname to a Restricted Directory"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Normalize the path with os.path.abspath() and validate it stays
+        within the intended directory using os.path.commonpath().
+        Example: safe_path = os.path.abspath(os.path.join(base_dir, filename));
+        assert os.path.commonpath([base_dir, safe_path]) == base_dir
+      ai_context: >
+        AI models construct file paths with f-strings or concatenation
+        directly from user input because training examples rarely include
+        path normalization or jail-checking logic.
+      severity_label: "HIGH"
+      rule_category: "path_traversal"
+    pattern-either:
+      - pattern: open(f"...", ...)
+      - pattern: open("..." + $USER_INPUT, ...)
+      - pattern: send_file(f"...", ...)

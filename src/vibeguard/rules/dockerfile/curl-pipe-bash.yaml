@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-dockerfile-curl-pipe-bash
+    languages: [dockerfile]
+    severity: ERROR
+    message: >
+      RUN commands that pipe remote scripts to shells execute unverified code
+      during image build and enable supply chain compromise.
+    metadata:
+      cwe: "CWE-494"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Download artifacts separately, verify signatures/checksums, and then
+        execute trusted local files in controlled build steps.
+      ai_context: >
+        AI-generated Docker setup steps frequently copy curl | bash install
+        snippets from project READMEs into Docker RUN instructions.
+      severity_label: "CRITICAL"
+      rule_category: "supply_chain"
+    pattern-regex: "(?im)^RUN\\s+.*(curl|wget)[^|]*\\|\\s*(bash|sh)"

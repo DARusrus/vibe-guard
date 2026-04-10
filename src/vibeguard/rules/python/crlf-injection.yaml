@@ -1,0 +1,28 @@
+rules:
+  - id: vibeguard-python-crlf-injection
+    languages: [python]
+    severity: ERROR
+    message: >
+      Assigning user-controlled values to response headers without CRLF
+      sanitization can enable HTTP response splitting.
+    metadata:
+      cwe: "CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Remove \r and \n characters from header values before assignment,
+        and avoid directly mapping request parameters into response headers.
+      ai_context: >
+        AI models often wire request parameters into headers for convenience
+        and omit newline sanitization required to prevent response splitting.
+      severity_label: "HIGH"
+      rule_category: "header_injection"
+    patterns:
+      - pattern: response.headers[$HEADER] = $VALUE
+      - metavariable-regex:
+          metavariable: $VALUE
+          regex: "(?i).*(request\\.(args|form|get|json)|params|input|user_).*"
+      - pattern-not-inside: |
+          $VALUE = $VALUE.replace("\\r", "").replace("\\n", "")
+          ...
+          response.headers[$HEADER] = $VALUE

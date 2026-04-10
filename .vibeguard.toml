@@ -1,0 +1,59 @@
+[vibeguard]
+
+# Minimum severity level to report.
+# Options: CRITICAL, HIGH, MEDIUM, LOW
+# Default: MEDIUM
+min_severity = "MEDIUM"
+
+# AI confidence threshold. Files scoring above this receive the full
+# 10-rule scan. Files below receive a lighter scan (fewer rules).
+# Range: 0.0 to 1.0. Default: 0.6
+ai_threshold = 0.6
+
+# File extensions to include in scanning.
+# Default: [".py", ".js", ".ts", ".jsx", ".tsx"]
+extensions = [".py", ".js", ".ts", ".jsx", ".tsx"]
+
+# Output format when running from CLI without --format flag.
+# Options: terminal, sarif, json
+# Default: terminal
+default_format = "terminal"
+
+# Exit with code 1 if any findings are present (used in CI).
+# Default: true
+fail_on_findings = true
+
+# Glob patterns to exclude from scanning.
+# Default: common build and dependency directories.
+exclude_paths = [
+    "node_modules",
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "dist",
+    "build",
+    "*.egg-info",
+    "tests/fixtures",
+]
+
+# Rule IDs to ignore across all scans. Use sparingly.
+# Example: ignore_rules = ["vibeguard-python-cors-wildcard"]
+ignore_rules = []
+
+# Additional directories containing custom YAML rules.
+# Example: extra_rules_dirs = ["./my-custom-rules"]
+extra_rules_dirs = []
+
+# AI features (requires GEMINI_API_KEY environment variable)
+# Enable AI-powered false positive filtering for HIGH/CRITICAL findings
+smart_filter = false
+
+# Add plain-English attack explanations to each finding
+explain = false
+
+# Enable live registry validation for dependency scanning
+online_sca = false
+
+# Security score threshold — fail CI if score drops below this
+min_score = 0

@@ -1,0 +1,56 @@
+rules:
+  - id: vibeguard-js-csrf-missing-token-fetch
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >
+      POST request appears to be missing a CSRF/XSRF token.
+    metadata:
+      cwe: "CWE-352"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Include the CSRF token in headers:
+        headers: { 'X-CSRF-Token': getCsrfToken() }.
+        Ensure your backend validates this token on state-changing requests.
+      ai_context: >
+        AI models generate fetch/axios calls that omit CSRF tokens
+        because training examples rarely show the full auth context.
+      severity_label: "MEDIUM"
+      rule_category: "csrf"
+    patterns:
+      - pattern: |
+          fetch($URL, { ..., method: "POST", ..., body: $DATA, ... })
+      - pattern-not: |
+          fetch($URL, { ..., method: "POST", ..., headers: { ..., "X-CSRF-Token": $TOKEN, ... }, ..., body: $DATA, ... })
+      - pattern-not: |
+          fetch($URL, { ..., method: "POST", ..., headers: { ..., "x-csrf-token": $TOKEN, ... }, ..., body: $DATA, ... })
+      - pattern-not: |
+          fetch($URL, { ..., method: "POST", ..., headers: { ..., "X-XSRF-TOKEN": $TOKEN, ... }, ..., body: $DATA, ... })
+
+  - id: vibeguard-js-csrf-missing-token-axios
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >
+      axios.post call appears to be missing a CSRF/XSRF token.
+    metadata:
+      cwe: "CWE-352"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Include the CSRF token in headers:
+        headers: { 'X-CSRF-Token': getCsrfToken() }.
+        Ensure your backend validates this token on state-changing requests.
+      ai_context: >
+        AI models generate fetch/axios calls that omit CSRF tokens
+        because training examples rarely show the full auth context.
+      severity_label: "MEDIUM"
+      rule_category: "csrf"
+    patterns:
+      - pattern: |
+          axios.post($URL, $DATA, ...)
+      - pattern-not: |
+          axios.post($URL, $DATA, { ..., headers: { ..., "X-CSRF-Token": $TOKEN, ... }, ... })
+      - pattern-not: |
+          axios.post($URL, $DATA, { ..., headers: { ..., "x-csrf-token": $TOKEN, ... }, ... })
+      - pattern-not: |
+          axios.post($URL, $DATA, { ..., headers: { ..., "X-XSRF-TOKEN": $TOKEN, ... }, ... })

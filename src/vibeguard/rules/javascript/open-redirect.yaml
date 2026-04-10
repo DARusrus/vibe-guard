@@ -1,0 +1,23 @@
+rules:
+  - id: vibeguard-js-open-redirect
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >
+      Redirecting users to untrusted request-derived URLs can enable phishing
+      and credential theft campaigns.
+    metadata:
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Validate redirect targets against an allowlist and reject absolute
+        external URLs before calling redirect APIs.
+      ai_context: >
+        AI models frequently implement login return redirects from query params
+        without domain validation because simple examples omit checks.
+      severity_label: "HIGH"
+      rule_category: "open_redirect"
+    pattern-either:
+      - pattern: res.redirect(req.query.next)
+      - pattern: res.redirect(req.query.redirect)
+      - pattern: return NextResponse.redirect($URL)

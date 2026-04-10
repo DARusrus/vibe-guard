@@ -1,0 +1,35 @@
+rules:
+  - id: vibeguard-ts-type-assertion-bypass
+    languages: [typescript]
+    severity: WARNING
+    message: >
+      Type assertion with 'as any' passed into security-sensitive operation.
+    metadata:
+      cwe: "CWE-704"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Add explicit type validation before security-sensitive operations.
+        Use Zod or io-ts to validate untrusted data instead of casting with 'as any'.
+      ai_context: >
+        AI models use 'as any' to bypass TypeScript type errors quickly,
+        which silently removes runtime validation that TypeScript would otherwise enforce.
+      severity_label: "MEDIUM"
+      rule_category: "type_assertion_bypass"
+    pattern-either:
+      - pattern: execute($VALUE as any, ...)
+      - pattern: query($VALUE as any, ...)
+      - pattern: run($VALUE as any, ...)
+      - pattern: open($VALUE as any, ...)
+      - pattern: readFile($VALUE as any, ...)
+      - pattern: fetch($VALUE as any, ...)
+      - pattern: request($VALUE as any, ...)
+      - pattern: eval($VALUE as any)
+      - pattern: $OBJ.execute($VALUE as any, ...)
+      - pattern: $OBJ.query($VALUE as any, ...)
+      - pattern: $OBJ.run($VALUE as any, ...)
+      - pattern: $OBJ.open($VALUE as any, ...)
+      - pattern: $OBJ.readFile($VALUE as any, ...)
+      - pattern: $OBJ.fetch($VALUE as any, ...)
+      - pattern: $OBJ.request($VALUE as any, ...)
+      - pattern: $OBJ.eval($VALUE as any)

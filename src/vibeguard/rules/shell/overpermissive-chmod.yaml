@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-shell-chmod-777
+    languages: [bash]
+    severity: WARNING
+    message: >
+      Overly permissive chmod values can expose files and scripts to tampering
+      and unauthorized writes.
+    metadata:
+      cwe: "CWE-732: Incorrect Permission Assignment for Critical Resource"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use least privilege modes such as 644 for files and 755 for scripts
+        and directories. Avoid 777/666 and broad world-writable settings.
+      ai_context: >
+        AI-generated troubleshooting scripts frequently use chmod 777 as a
+        quick fix for permission errors and that pattern leaks into production.
+      severity_label: "MEDIUM"
+      rule_category: "permissions"
+    pattern-regex: "(?m)chmod\\s+(777|666|a\\+rwx|o\\+w)\\b"

@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-sql-missing-rls
+    languages: [generic]
+    severity: ERROR
+    message: >
+      SQL migration defines CREATE TABLE without enabling row level security,
+      risking broad unauthorized access in policy-based databases.
+    metadata:
+      cwe: "CWE-284: Improper Access Control"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Add ALTER TABLE <table> ENABLE ROW LEVEL SECURITY immediately after
+        table creation and define explicit policies for each role.
+      ai_context: >
+        AI-generated Supabase SQL often creates tables but omits explicit RLS
+        enablement because examples rely on separate dashboard configuration.
+      severity_label: "CRITICAL"
+      rule_category: "authorization"
+    pattern-regex: "(?is)CREATE\\s+TABLE(?![\\s\\S]*ENABLE\\s+ROW\\s+LEVEL\\s+SECURITY)"

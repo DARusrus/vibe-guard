@@ -1,0 +1,42 @@
+rules:
+  - id: vibeguard-python-ssti-render-template-string
+    languages: [python]
+    severity: ERROR
+    message: >
+      Passing non-literal content into render_template_string may enable SSTI
+      and remote code execution through template expression injection.
+    metadata:
+      cwe: "CWE-94: Improper Control of Generation of Code"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use render_template with static template files and pass untrusted data
+        only as context variables. Never render user text as a template body.
+      ai_context: >
+        AI coding assistants often implement dynamic page rendering with
+        render_template_string for brevity and accidentally expose SSTI.
+      severity_label: "CRITICAL"
+      rule_category: "ssti"
+    patterns:
+      - pattern: render_template_string($TPL)
+      - pattern-not: render_template_string("...")
+      - pattern-not: render_template_string('...')
+
+  - id: vibeguard-python-ssti-jinja-from-string
+    languages: [python]
+    severity: ERROR
+    message: >
+      Building Jinja templates directly from untrusted strings can allow SSTI.
+    metadata:
+      cwe: "CWE-94: Improper Control of Generation of Code"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Compile only trusted template sources and treat user values as data.
+        Prefer template files loaded from a trusted environment.
+      ai_context: >
+        AI models frequently call Environment().from_string for flexibility
+        without considering that attackers can inject executable template code.
+      severity_label: "CRITICAL"
+      rule_category: "ssti"
+    pattern: Environment(...).from_string($USER_INPUT)

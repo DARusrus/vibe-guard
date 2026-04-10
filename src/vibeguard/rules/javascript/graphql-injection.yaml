@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-js-graphql-injection
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Constructing GraphQL operations with template interpolation can permit
+      query injection and unauthorized field access.
+    metadata:
+      cwe: "CWE-89"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use GraphQL variables and bind untrusted data through variable maps,
+        not by interpolating raw values into operation strings.
+      ai_context: >
+        AI assistants often reuse SQL-like string interpolation patterns when
+        generating GraphQL code paths for dynamic queries.
+      severity_label: "CRITICAL"
+      rule_category: "graphql_injection"
+    pattern-regex: "(query|mutation|subscription)\\s*\\{[^`]*\\$\\{[^}]+\\}"

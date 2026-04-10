@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-ts-client-side-auth
+    languages: [typescript]
+    severity: ERROR
+    message: >
+      TypeScript UI authorization checks do not enforce backend access control
+      and are trivial for attackers to bypass client-side.
+    metadata:
+      cwe: "CWE-602: Client-Side Enforcement of Server-Side Security"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Keep authorization decisions on server routes and treat client checks
+        as presentation logic only.
+      ai_context: >
+        AI-generated React/Next TypeScript code frequently stores role checks
+        in component state and assumes they are security controls.
+      severity_label: "CRITICAL"
+      rule_category: "authorization"
+    pattern-regex: "\\{\\s*(isAdmin|isAuthenticated|userRole|isLoggedIn|hasPermission)\\s*&&\\s*<"

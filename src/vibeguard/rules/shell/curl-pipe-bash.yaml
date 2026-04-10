@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-shell-curl-pipe-bash
+    languages: [bash]
+    severity: ERROR
+    message: >
+      Piping downloaded script content directly to a shell bypasses integrity
+      verification and enables supply chain compromise.
+    metadata:
+      cwe: "CWE-494: Download of Code Without Integrity Check"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Download scripts to disk, verify checksum/signature, inspect content,
+        then execute as a separate controlled step.
+      ai_context: >
+        AI models replicate quickstart install snippets like curl | bash,
+        which trade safety for convenience and are easy to weaponize.
+      severity_label: "CRITICAL"
+      rule_category: "supply_chain"
+    pattern-regex: "(?i)(curl|wget)[^\\n|]*\\|\\s*(bash|sh)"

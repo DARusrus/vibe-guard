@@ -1,0 +1,12 @@
+- id: vibe-guard
+  name: vibe-guard — AI code security scanner
+  description: >
+    Scans staged files for security vulnerabilities in AI-generated code.
+    Checks for SQL injection, hardcoded secrets, SSRF, command injection,
+    and 6 other vulnerability categories.
+  language: python
+  entry: vibe-guard scan
+  args: ['--format', 'terminal', '--severity', 'HIGH']
+  types_or: [python, javascript, typescript]
+  pass_filenames: false
+  additional_dependencies: ['semgrep', 'detect-secrets']

@@ -1,0 +1,48 @@
+rules:
+  - id: vibeguard-python-cors-wildcard-string
+    languages: [python]
+    severity: WARNING
+    message: >
+      Permissive CORS policy with wildcard origin. Allowing all origins
+      exposes the API to cross-origin attacks from any website.
+    metadata:
+      cwe: "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Specify exact allowed origins instead of using a wildcard.
+        Replace CORS(app, origins="*") with
+        CORS(app, origins=["https://yourdomain.com"]). Never use
+        wildcard origins in production environments.
+      ai_context: >
+        AI models set CORS origins to "*" because training examples
+        use the wildcard for development convenience, and the generated
+        code is typically not updated for production security requirements.
+      severity_label: "MEDIUM"
+      rule_category: "cors"
+    pattern-either:
+      - pattern: CORS($APP, origins="*")
+      - pattern: CORS($APP, origins=["*"])
+
+  - id: vibeguard-python-cors-wildcard-header
+    languages: [python]
+    severity: WARNING
+    message: >
+      Manual Access-Control-Allow-Origin header set to wildcard.
+      This allows any website to make cross-origin requests to this endpoint.
+    metadata:
+      cwe: "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Set the Access-Control-Allow-Origin header to specific allowed
+        origins. Validate the Origin request header against an allowlist
+        and reflect only approved origins.
+      ai_context: >
+        AI models set Access-Control-Allow-Origin to "*" in response
+        headers because it is the simplest way to resolve CORS errors
+        during development, and training data rarely shows proper
+        origin validation patterns.
+      severity_label: "MEDIUM"
+      rule_category: "cors"
+    pattern: $RESPONSE.headers["Access-Control-Allow-Origin"] = "*"

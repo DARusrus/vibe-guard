@@ -1,0 +1,26 @@
+rules:
+  - id: vibeguard-js-nosql-injection
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Passing req.body or req.query directly to Mongo queries can enable
+      operator injection and unauthorized query manipulation.
+    metadata:
+      cwe: "CWE-943"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Extract and validate allowlisted fields before query construction,
+        e.g. User.findOne({ email: req.body.email }) with schema validation.
+      ai_context: >
+        AI-generated Express handlers often map request payloads directly into
+        database APIs by analogy with object-oriented REST patterns.
+      severity_label: "CRITICAL"
+      rule_category: "nosql_injection"
+    pattern-either:
+      - pattern: $COL.find(req.body)
+      - pattern: $COL.findOne(req.body)
+      - pattern: $COL.updateOne(req.body, ...)
+      - pattern: $COL.deleteOne(req.body)
+      - pattern: $COL.find(req.query)
+      - pattern: $COL.findOne(req.query)

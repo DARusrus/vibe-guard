@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-python-graphql-injection
+    languages: [python]
+    severity: ERROR
+    message: >
+      Building GraphQL operations with f-string interpolation can allow query
+      manipulation and unauthorized data access.
+    metadata:
+      cwe: "CWE-89"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use GraphQL variables and pass untrusted values via variable_values,
+        for example client.execute(query, variable_values={"id": user_id}).
+      ai_context: >
+        AI models mimic SQL-style string interpolation when constructing
+        GraphQL operations, ignoring safer parameterized variable APIs.
+      severity_label: "CRITICAL"
+      rule_category: "graphql_injection"
+    pattern-regex: "(execute|query)\\(\\s*f[\"'].*(query|mutation|subscription)\\s*\\{.*\\{[^}]+\\}.*[\"']"

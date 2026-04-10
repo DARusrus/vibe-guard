@@ -1,0 +1,28 @@
+name: Dogfood — vibe-guard scans itself
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  dogfood-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install package
+        run: pip install -e .
+      - name: Run dogfood scan
+        run: |
+          vibe-guard scan ./src --format json --output dogfood-results.json --no-fail
+      - name: Upload dogfood results
+        uses: actions/upload-artifact@v4
+        with:
+          name: dogfood-scan-results
+          path: dogfood-results.json
+      - name: Print summary
+        run: echo "Dogfood scan complete"

@@ -1,0 +1,26 @@
+rules:
+  - id: vibeguard-python-pii-in-logs
+    languages: [python]
+    severity: WARNING
+    message: >
+      Logging personally identifiable information can cause compliance and
+      privacy violations in centralized log systems.
+    metadata:
+      cwe: "CWE-532: Insertion of Sensitive Information into Log File"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Redact or omit PII fields in logs and prefer stable user identifiers.
+        Route sensitive audit data to controlled stores with retention limits.
+      ai_context: >
+        AI-generated debugging logs frequently include full user profile fields,
+        because examples optimize observability over privacy controls.
+      severity_label: "HIGH"
+      rule_category: "privacy"
+    patterns:
+      - pattern-either:
+          - pattern: logger.$METHOD(f"...{$PII}...")
+          - pattern: logging.$METHOD(f"...{$PII}...")
+      - metavariable-regex:
+          metavariable: $PII
+          regex: "(?i).*(email|phone|ssn|dob|birth|address|credit_card|card_number|national_id|passport|tax_id|ip_address).*"

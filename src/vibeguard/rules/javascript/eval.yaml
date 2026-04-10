@@ -1,0 +1,29 @@
+rules:
+  - id: vibeguard-js-eval-user-input
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Dynamic code execution with non-literal input can enable code injection.
+    metadata:
+      cwe: "CWE-95"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Never pass user-controlled data to eval() or Function().
+        Use JSON.parse() for data, or a sandboxed VM for dynamic code.
+      ai_context: >
+        AI models use eval() when asked to implement dynamic code execution
+        features, unaware of the code injection risk.
+      severity_label: "CRITICAL"
+      rule_category: "eval"
+    patterns:
+      - pattern-either:
+          - pattern: eval($INPUT)
+          - pattern: new Function($INPUT, ...)
+          - pattern: setTimeout($INPUT, ...)
+      - pattern-not: eval("...")
+      - pattern-not: eval('...')
+      - pattern-not: new Function("...", ...)
+      - pattern-not: new Function('...', ...)
+      - pattern-not: setTimeout("...", ...)
+      - pattern-not: setTimeout('...', ...)

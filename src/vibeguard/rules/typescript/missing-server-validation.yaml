@@ -1,0 +1,23 @@
+rules:
+  - id: vibeguard-ts-missing-server-validation
+    languages: [typescript]
+    severity: WARNING
+    message: >
+      Server action receives form/request input without early schema parsing,
+      increasing risk of unsafe or malformed data processing.
+    metadata:
+      cwe: "CWE-20: Improper Input Validation"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Validate inside the server action using schema.parse or safeParse in
+        the first lines of function logic before any side effects.
+      ai_context: >
+        AI-generated Next.js code often validates only in client forms and
+        assumes server actions inherit that trust boundary.
+      severity_label: "HIGH"
+      rule_category: "input_validation"
+    patterns:
+      - pattern-regex: "(?s)\"use server\"[\\s\\S]*async\\s+function\\s+\\w+\\s*\\([^)]*(FormData|Request)[^)]*\\)"
+      - pattern-not-regex: "(?s)\\.parse\\s*\\("
+      - pattern-not-regex: "(?s)\\.safeParse\\s*\\("

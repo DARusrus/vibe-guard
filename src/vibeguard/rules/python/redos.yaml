@@ -1,0 +1,26 @@
+rules:
+  - id: vibeguard-python-redos-catastrophic-regex
+    languages: [python]
+    severity: WARNING
+    message: >
+      Compiling attacker-influenced regular expressions can cause catastrophic
+      backtracking and denial-of-service.
+    metadata:
+      cwe: "CWE-1333: Inefficient Regular Expression Complexity"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Do not compile regex patterns from user input. Prefer fixed allowlisted
+        patterns and apply timeouts or RE2-style engines for untrusted regexes.
+      ai_context: >
+        AI-generated search endpoints frequently pass request values into
+        re.compile for flexibility, missing algorithmic complexity abuse.
+      severity_label: "HIGH"
+      rule_category: "redos"
+    pattern-either:
+      - pattern: re.compile(request.args.get(...))
+      - pattern: re.compile(request.form.get(...))
+      - pattern: re.compile($PATTERN)
+    metavariable-regex:
+      metavariable: $PATTERN
+      regex: "(?i).*(regex|pattern|expr|expression|user_input|input).*"

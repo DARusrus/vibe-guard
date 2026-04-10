@@ -1,0 +1,66 @@
+rules:
+  - id: vibeguard-python-xxe-elementtree-parse
+    languages: [python]
+    severity: ERROR
+    message: >
+      Parsing XML from non-literal input with ElementTree can expose XXE-style
+      file disclosure and SSRF paths in unsafe parser contexts.
+    metadata:
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Replace xml.etree parsing with defusedxml.ElementTree APIs.
+        Example: import defusedxml.ElementTree as ET; ET.parse(path).
+      ai_context: >
+        AI-generated Python frequently uses the simplest XML parser examples
+        and omits hardened parsing libraries intended for hostile input.
+      severity_label: "CRITICAL"
+      rule_category: "xxe"
+    patterns:
+      - pattern: xml.etree.ElementTree.parse($INPUT)
+      - pattern-not: xml.etree.ElementTree.parse("...")
+      - pattern-not: xml.etree.ElementTree.parse('...')
+
+  - id: vibeguard-python-xxe-lxml-parse
+    languages: [python]
+    severity: ERROR
+    message: >
+      lxml parse usage without hardened entity handling can allow external
+      entity expansion and remote fetch behavior.
+    metadata:
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Create a parser with resolve_entities=False and no_network=True,
+        or use defusedxml wrappers for untrusted XML sources.
+      ai_context: >
+        AI snippets commonly call etree.parse directly and skip secure parser
+        construction because default behavior appears to work in tutorials.
+      severity_label: "CRITICAL"
+      rule_category: "xxe"
+    pattern-either:
+      - pattern: lxml.etree.parse($INPUT)
+      - pattern: etree.parse($INPUT)
+
+  - id: vibeguard-python-xxe-minidom-parse
+    languages: [python]
+    severity: ERROR
+    message: >
+      minidom.parse on untrusted XML can expose entity-related parsing risks.
+    metadata:
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Avoid minidom for untrusted XML and switch to defusedxml parsers.
+        If XML must be processed, validate source trust boundaries first.
+      ai_context: >
+        AI models select minidom because it is part of the stdlib and appears
+        straightforward, but it lacks secure defaults for hostile documents.
+      severity_label: "CRITICAL"
+      rule_category: "xxe"
+    pattern-either:
+      - pattern: xml.dom.minidom.parse($INPUT)
+      - pattern: minidom.parse($INPUT)

@@ -1,0 +1,26 @@
+rules:
+  - id: vibeguard-js-sqli-template-literal
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      SQL injection risk from interpolated query strings passed to database methods.
+    metadata:
+      cwe: "CWE-89"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use parameterized queries: db.query('SELECT ... WHERE id = ?', [userId]).
+        Never interpolate variables into SQL strings.
+      ai_context: >
+        AI models use template literals as the natural JS string interpolation
+        syntax, applying them to SQL queries without recognizing the injection risk.
+      severity_label: "CRITICAL"
+      rule_category: "sqli"
+    patterns:
+      - pattern-either:
+          - pattern: $DB.$METHOD(`...${$INPUT}...`)
+          - pattern: $DB.$METHOD("..." + $INPUT, ...)
+          - pattern: $DB.$METHOD('...' + $INPUT, ...)
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: "^(query|execute|run|raw)$"

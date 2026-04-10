@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-js-ecb-mode
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      ECB mode in symmetric encryption reveals plaintext patterns and is not
+      appropriate for secure data protection.
+    metadata:
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use AEAD modes like AES-GCM or ChaCha20-Poly1305 and include integrity
+        verification rather than ECB encryption.
+      ai_context: >
+        AI models often emit createCipher/createCipheriv examples with ecb
+        because legacy snippets are compact and common in training data.
+      severity_label: "CRITICAL"
+      rule_category: "crypto"
+    pattern-regex: "createCipher(iv)?\\(\\s*['\"][^'\"]*ecb[^'\"]*['\"]"

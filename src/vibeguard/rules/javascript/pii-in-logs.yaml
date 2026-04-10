@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-js-pii-in-logs
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >
+      Logging PII fields in plaintext increases privacy and compliance risk in
+      centralized logging pipelines.
+    metadata:
+      cwe: "CWE-532: Insertion of Sensitive Information into Log File"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Redact PII before logging and use stable non-sensitive identifiers for
+        observability. Keep sensitive audit trails in controlled systems.
+      ai_context: >
+        AI-generated debug logs frequently include user contact and identity
+        fields because examples optimize troubleshooting readability.
+      severity_label: "HIGH"
+      rule_category: "privacy"
+    pattern-regex: "(console\\.log|logger\\.(info|warn|error|debug)).*(email|phone|ssn|dob|address|passport|tax_id|credit_card|card_number|ip_address)"

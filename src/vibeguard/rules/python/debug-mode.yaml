@@ -1,0 +1,44 @@
+rules:
+  - id: vibeguard-python-debug-mode-enabled
+    languages: [python]
+    severity: ERROR
+    message: >
+      Flask debug mode enables interactive debugging features that can expose
+      remote code execution paths in production deployments.
+    metadata:
+      cwe: "CWE-94"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Remove hardcoded debug=True in deployed environments and gate debug
+        behavior behind explicit development-only configuration.
+      ai_context: >
+        AI-generated Flask snippets commonly include debug=True from tutorial
+        boilerplate and this setting is often copied into production code.
+      severity_label: "CRITICAL"
+      rule_category: "debug_mode"
+    pattern: app.run(..., debug=True, ...)
+
+  - id: vibeguard-python-debug-mode-outside-main-guard
+    languages: [python]
+    severity: ERROR
+    message: >
+      Running app with debug=True outside a main guard increases accidental
+      production exposure and unsafe startup behavior.
+    metadata:
+      cwe: "CWE-94"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Keep debug bootstrapping only in local development entrypoints and
+        protect startup code under if __name__ == "__main__": blocks.
+      ai_context: >
+        AI models frequently output top-level app.run(debug=True) lines for
+        simplicity, which are copied directly into deployed services.
+      severity_label: "CRITICAL"
+      rule_category: "debug_mode"
+    patterns:
+      - pattern: app.run(..., debug=True, ...)
+      - pattern-not-inside: |
+          if __name__ == "__main__":
+              ...

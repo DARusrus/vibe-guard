@@ -1,0 +1,33 @@
+rules:
+  - id: vibeguard-python-race-condition-balance
+    languages: [python]
+    severity: ERROR
+    message: >
+      Balance check followed by update without transaction boundaries can allow
+      concurrent double-spend race conditions.
+    metadata:
+      cwe: "CWE-362: Concurrent Execution Using Shared Resource with Improper Synchronization"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Wrap balance verification and deduction inside a database transaction
+        with row locking, e.g., SELECT ... FOR UPDATE before UPDATE.
+      ai_context: >
+        AI models generate linear read-then-write account logic without
+        transaction semantics because race behavior is not visible in examples.
+      severity_label: "CRITICAL"
+      rule_category: "race_condition"
+    patterns:
+      - pattern: |
+          if $BALANCE >= $AMOUNT:
+              ...
+              $DB.$WRITE(...)
+      - pattern-not-inside: |
+          with db.transaction(...):
+              ...
+      - pattern-not-inside: |
+          with session.begin(...):
+              ...
+      - pattern-not-inside: |
+          with conn.cursor(...):
+              ...

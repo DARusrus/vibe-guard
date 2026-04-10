@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-k8s-rbac-cluster-admin
+    languages: [yaml]
+    severity: ERROR
+    message: >
+      Kubernetes RBAC grants cluster-admin or wildcard permissions that exceed
+      least-privilege requirements.
+    metadata:
+      cwe: "CWE-269: Improper Privilege Management"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Replace broad roles with namespace-scoped least-privilege Role/RoleBinding
+        definitions and audit effective permissions before deployment.
+      ai_context: >
+        AI-generated cluster manifests often grant cluster-admin to quickly fix
+        permission errors, masking overly broad privilege assignments.
+      severity_label: "CRITICAL"
+      rule_category: "authorization"
+    pattern-regex: "(?is)(roleRef:\\s*[\\s\\S]*name:\\s*cluster-admin|verbs:\\s*\\[\\s*\"\\*\"\\s*\\]|resources:\\s*\\[\\s*\"\\*\"\\s*\\])"

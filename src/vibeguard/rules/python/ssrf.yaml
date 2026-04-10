@@ -1,0 +1,32 @@
+rules:
+  - id: vibeguard-python-ssrf-user-controlled-url
+    languages: [python]
+    severity: ERROR
+    message: >
+      Server-Side Request Forgery (SSRF) risk. A URL from user-controlled
+      input is passed directly to an HTTP client without validation.
+    metadata:
+      cwe: "CWE-918: Server-Side Request Forgery"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Validate the URL against an allowlist of permitted domains.
+        Block requests to private IP ranges (10.x, 172.16-31.x, 192.168.x,
+        127.x, 169.254.x). Use urllib.parse.urlparse() to extract the host
+        and compare against the allowlist before making the request.
+      ai_context: >
+        AI models pass user-provided URLs directly to requests.get() because
+        training examples focus on functionality over security, and URL
+        validation boilerplate is rarely included in code snippets.
+      severity_label: "HIGH"
+      rule_category: "ssrf"
+    pattern-either:
+      - patterns:
+          - pattern: requests.$METHOD($URL, ...)
+          - pattern-not: requests.$METHOD("...", ...)
+      - patterns:
+          - pattern: httpx.$METHOD($URL, ...)
+          - pattern-not: httpx.$METHOD("...", ...)
+      - patterns:
+          - pattern: urllib.request.urlopen($URL, ...)
+          - pattern-not: urllib.request.urlopen("...", ...)

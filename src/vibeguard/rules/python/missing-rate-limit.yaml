@@ -1,0 +1,32 @@
+rules:
+  - id: vibeguard-python-missing-rate-limit
+    languages: [python]
+    severity: WARNING
+    message: >
+      Authentication-related route appears to lack a rate-limit decorator,
+      increasing brute-force and credential stuffing risk.
+    metadata:
+      cwe: "CWE-307: Improper Restriction of Excessive Authentication Attempts"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Add route-level throttling with Flask-Limiter or equivalent middleware,
+        for example @limiter.limit("5 per minute") on login/reset endpoints.
+      ai_context: >
+        AI models usually output functional login endpoints first and omit rate
+        limiting setup because it requires extra framework-specific wiring.
+      severity_label: "HIGH"
+      rule_category: "rate_limit"
+    patterns:
+      - pattern: |
+          @app.$METHOD(...)
+          def $FUNC(...):
+              ...
+      - metavariable-regex:
+          metavariable: $FUNC
+          regex: "(?i)(login|signin|authenticate|reset_password|verify_otp|forgot_password)"
+      - pattern-not: |
+          @limiter.limit(...)
+          @app.$METHOD(...)
+          def $FUNC(...):
+              ...

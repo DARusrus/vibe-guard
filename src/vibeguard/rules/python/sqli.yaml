@@ -1,0 +1,25 @@
+rules:
+  - id: vibeguard-python-sqli-fstring
+    languages: [python]
+    severity: ERROR
+    message: >
+      SQL injection via string interpolation in execute() call.
+      User-controlled input is directly embedded into the SQL query string.
+    metadata:
+      cwe: "CWE-89: Improper Neutralization of Special Elements in SQL Command"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use parameterized queries instead of string interpolation.
+        Replace cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
+        with cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+      ai_context: >
+        AI models default to f-strings for SQL queries because training
+        examples prioritize readability over security, producing vulnerable
+        code that looks clean and idiomatic.
+      severity_label: "CRITICAL"
+      rule_category: "sqli"
+    pattern-either:
+      - pattern: $CURSOR.execute(f"...", ...)
+      - pattern: $CURSOR.execute("..." % ..., ...)
+      - pattern: $CURSOR.execute("..." + $QUERY, ...)

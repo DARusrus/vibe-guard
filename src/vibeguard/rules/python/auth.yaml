@@ -1,0 +1,55 @@
+rules:
+  - id: vibeguard-python-auth-jwt-verify-disabled
+    languages: [python]
+    severity: ERROR
+    message: >
+      JWT signature verification is disabled. Decoding JWTs without
+      verifying the signature allows token forgery attacks.
+    metadata:
+      cwe: "CWE-347: Improper Verification of Cryptographic Signature"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Always verify JWT signatures. Remove options={"verify_signature": False}
+        and provide the correct signing key. Use jwt.decode(token, key,
+        algorithms=["HS256"]) with proper key management.
+      ai_context: >
+        AI models disable JWT verification in generated code because
+        training examples often skip verification for simplicity,
+        producing decode calls that work but accept forged tokens.
+      severity_label: "CRITICAL"
+      rule_category: "auth"
+    pattern-either:
+      - pattern: |
+          jwt.decode(..., options={"verify_signature": False}, ...)
+      - pattern: jwt.decode(..., verify=False, ...)
+
+  - id: vibeguard-python-auth-timing-unsafe-compare
+    languages: [python]
+    severity: WARNING
+    message: >
+      Timing-unsafe string comparison for a security token.
+      Use hmac.compare_digest() to prevent timing attacks.
+    patterns:
+      - pattern-either:
+          - pattern: $TOKEN == $USER_INPUT
+          - pattern: $USER_INPUT == $TOKEN
+      - metavariable-regex:
+          metavariable: $TOKEN
+          regex: >-
+            (?i).*(token|secret|key|password|passwd|pwd|
+            auth|credential|hash|digest|signature|nonce).*
+    metadata:
+      cwe: "CWE-208: Observable Timing Discrepancy"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Replace == with hmac.compare_digest(token, user_input).
+        This ensures constant-time comparison regardless of string
+        length, preventing timing-based attacks.
+      ai_context: >
+        AI models use == for token comparison because it is the
+        natural Python equality operator. The timing vulnerability
+        in string comparison is not obvious from training examples.
+      severity_label: "HIGH"
+      rule_category: "auth"

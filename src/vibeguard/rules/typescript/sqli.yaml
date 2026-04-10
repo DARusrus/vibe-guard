@@ -1,0 +1,23 @@
+rules:
+  - id: vibeguard-ts-sqli-template-literal
+    languages: [typescript]
+    severity: ERROR
+    message: >
+      SQL injection risk from interpolated raw SQL in TypeScript ORM/query APIs.
+    metadata:
+      cwe: "CWE-89"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        TypeORM: use .query('... WHERE id = ?', [id]).
+        Prisma: use prisma.$queryRaw with tagged template params.
+        Never interpolate variables into raw SQL.
+      ai_context: >
+        AI models use TypeORM's .query() and Prisma's $executeRawUnsafe()
+        when asked for dynamic SQL, missing the parameterized alternatives.
+      severity_label: "CRITICAL"
+      rule_category: "sqli"
+    pattern-either:
+      - pattern: getRepository($ENTITY).query(`...${$INPUT}...`)
+      - pattern: prisma.$executeRawUnsafe(`...${$INPUT}...`)
+      - pattern: $DB.execute(sql`...${$INPUT}...`)

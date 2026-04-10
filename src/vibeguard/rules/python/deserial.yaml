@@ -1,0 +1,96 @@
+rules:
+  - id: vibeguard-python-deserial-pickle-loads
+    languages: [python]
+    severity: ERROR
+    message: >
+      Insecure deserialization via pickle.loads(). Deserializing untrusted
+      data with pickle can lead to arbitrary code execution.
+    metadata:
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Replace pickle with a safe serialization format like JSON.
+        If pickle is required, ensure data comes from a trusted source
+        and consider using hmac to verify data integrity before loading.
+      ai_context: >
+        AI models use pickle for serialization by default because it handles
+        arbitrary Python objects conveniently, but training data rarely
+        warns about the code execution risks of untrusted pickle data.
+      severity_label: "CRITICAL"
+      rule_category: "deserial"
+    pattern: pickle.loads($DATA)
+
+  - id: vibeguard-python-deserial-pickle-load
+    languages: [python]
+    severity: ERROR
+    message: >
+      Insecure deserialization via pickle.load(). Loading pickled data from
+      a file can lead to arbitrary code execution if the file is untrusted.
+    metadata:
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Replace pickle with a safe serialization format like JSON.
+        If pickle is required, ensure data comes from a trusted source
+        and consider using hmac to verify data integrity before loading.
+      ai_context: >
+        AI models default to pickle.load() for file-based data persistence
+        because it is the most straightforward serialization approach in
+        training examples, without considering untrusted input scenarios.
+      severity_label: "CRITICAL"
+      rule_category: "deserial"
+    pattern: pickle.load($FILE)
+
+  - id: vibeguard-python-deserial-yaml-unsafe
+    languages: [python]
+    severity: ERROR
+    message: >
+      Unsafe YAML loading without explicit Loader. yaml.load() without
+      Loader=yaml.SafeLoader can execute arbitrary Python code.
+    metadata:
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Always specify a safe loader: yaml.safe_load(data) or
+        yaml.load(data, Loader=yaml.SafeLoader). Never use yaml.load()
+        with the default FullLoader on untrusted input.
+      ai_context: >
+        AI models generate yaml.load(data) without the Loader parameter
+        because older Python examples and tutorials omit it, and the
+        deprecation warning was only added in recent PyYAML versions.
+      severity_label: "CRITICAL"
+      rule_category: "deserial"
+    patterns:
+      - pattern: yaml.load($DATA)
+      - pattern-not: yaml.load($DATA, Loader=...)
+
+  - id: vibeguard-python-deserial-eval-exec
+    languages: [python]
+    severity: ERROR
+    message: >
+      Use of eval() or exec() on dynamic input. These functions execute
+      arbitrary Python code and can lead to remote code execution.
+    metadata:
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Replace eval() with ast.literal_eval() for safe parsing of Python
+        literals. For exec(), refactor to avoid dynamic code execution
+        entirely. Use a restricted parser or configuration system instead.
+      ai_context: >
+        AI models use eval() and exec() as convenient shortcuts for dynamic
+        computation, especially in calculator, config parsing, and template
+        rendering examples from training data.
+      severity_label: "CRITICAL"
+      rule_category: "deserial"
+    pattern-either:
+      - patterns:
+          - pattern: eval($EXPR)
+          - pattern-not: eval("...")
+      - patterns:
+          - pattern: exec($EXPR)
+          - pattern-not: exec("...")

@@ -1,0 +1,24 @@
+rules:
+  - id: vibeguard-js-math-random-security
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Math.random() is predictable and unsuitable for tokens, OTPs, or other
+      security-sensitive random values.
+    metadata:
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Use crypto.getRandomValues or Node crypto.randomBytes for security
+        tokens and verification codes.
+      ai_context: >
+        AI models commonly produce Math.random token generators because this
+        API appears in many beginner JavaScript examples.
+      severity_label: "CRITICAL"
+      rule_category: "crypto"
+    patterns:
+      - pattern: const $NAME = Math.random()
+      - metavariable-regex:
+          metavariable: $NAME
+          regex: "(?i).*(token|otp|code|pin|key|nonce|csrf|reset|verify).*"

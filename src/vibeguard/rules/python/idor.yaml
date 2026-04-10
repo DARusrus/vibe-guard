@@ -1,0 +1,30 @@
+rules:
+  - id: vibeguard-python-idor
+    languages: [python]
+    severity: ERROR
+    message: >
+      Resource lookup by user-controlled identifier without ownership checks
+      can enable insecure direct object reference attacks.
+    metadata:
+      cwe: "CWE-639: Authorization Bypass Through User-Controlled Key"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Enforce ownership in query filters or post-fetch checks, such as
+        filtering by both resource id and current_user.id before returning data.
+      ai_context: >
+        AI-generated CRUD handlers commonly query by path id only and omit
+        authorization predicates that tie resources to the current principal.
+      severity_label: "CRITICAL"
+      rule_category: "idor"
+    patterns:
+      - pattern: db.query($MODEL).filter($MODEL.id == $ID)
+      - metavariable-regex:
+          metavariable: $ID
+          regex: "(?i).*(id|user_id|account_id|item_id|post_id).*"
+      - pattern-not-inside: |
+          if current_user.id == $ID:
+              ...
+      - pattern-not-inside: |
+          if session["user_id"] == $ID:
+              ...

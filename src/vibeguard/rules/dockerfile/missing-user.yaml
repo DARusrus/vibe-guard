@@ -1,0 +1,20 @@
+rules:
+  - id: vibeguard-dockerfile-missing-user
+    languages: [dockerfile]
+    severity: WARNING
+    message: >
+      Dockerfile without a non-root USER instruction runs application code as
+      root and increases blast radius of container compromise.
+    metadata:
+      cwe: "CWE-250: Execution with Unnecessary Privileges"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Create a dedicated unprivileged user and switch to it before CMD,
+        for example RUN adduser ... then USER appuser.
+      ai_context: >
+        AI-generated Dockerfiles prioritize minimum lines and often omit USER,
+        inheriting root execution from base image defaults.
+      severity_label: "HIGH"
+      rule_category: "container_security"
+    pattern-regex: "(?is)^(?![\\s\\S]*^USER\\s+(?!root\\b).+)[\\s\\S]*$"

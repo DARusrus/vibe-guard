@@ -1,0 +1,28 @@
+rules:
+  - id: vibeguard-python-weak-session-token
+    languages: [python]
+    severity: ERROR
+    message: >
+      Session/token secrets generated from predictable sources can be guessed
+      and reused by attackers.
+    metadata:
+      cwe: "CWE-330: Use of Insufficiently Random Values"
+      category: security
+      confidence: HIGH
+      fix_guidance: >
+        Generate session secrets with secrets.token_hex(32) or equivalent OS
+        CSPRNG APIs. Avoid uuid4/random for authentication tokens.
+      ai_context: >
+        AI coding assistants often recommend uuid4 and random APIs for tokens
+        because they are common ID-generation examples in training corpora.
+      severity_label: "HIGH"
+      rule_category: "session_security"
+    patterns:
+      - pattern-either:
+          - pattern: $TOKEN = uuid.uuid4()
+          - pattern: $TOKEN = random.random()
+          - pattern: $TOKEN = random.randint(...)
+          - pattern: $TOKEN = random.randrange(...)
+      - metavariable-regex:
+          metavariable: $TOKEN
+          regex: "(?i).*(token|session|key|secret).*"

@@ -1,0 +1,46 @@
+rules:
+  - id: vibeguard-python-missing-security-headers-flask
+    languages: [python]
+    severity: WARNING
+    message: >
+      Flask app initialization without visible security header middleware can
+      leave CSP, HSTS, and framing protections unset.
+    metadata:
+      cwe: "CWE-16: Configuration"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Add Flask-Talisman or equivalent response-header middleware and set
+        strict CSP, HSTS, X-Frame-Options, and X-Content-Type-Options values.
+      ai_context: >
+        AI-generated web app skeletons often stop at route wiring and skip
+        platform-specific security header middleware setup by default.
+      severity_label: "MEDIUM"
+      rule_category: "security_headers"
+    patterns:
+      - pattern: $APP = Flask(__name__)
+      - pattern-not-inside: |
+          Talisman($APP)
+
+  - id: vibeguard-python-missing-security-headers-fastapi
+    languages: [python]
+    severity: WARNING
+    message: >
+      FastAPI app initialization without HTTPS/security middleware can miss
+      baseline transport and response hardening protections.
+    metadata:
+      cwe: "CWE-16: Configuration"
+      category: security
+      confidence: MEDIUM
+      fix_guidance: >
+        Configure HTTPS redirect and header middleware, for example
+        app.add_middleware(HTTPSRedirectMiddleware) and explicit CSP controls.
+      ai_context: >
+        AI examples prioritize endpoint delivery and often omit middleware
+        hardening steps unless explicitly requested in the prompt.
+      severity_label: "MEDIUM"
+      rule_category: "security_headers"
+    patterns:
+      - pattern: $APP = FastAPI(...)
+      - pattern-not-inside: |
+          $APP.add_middleware(HTTPSRedirectMiddleware, ...)

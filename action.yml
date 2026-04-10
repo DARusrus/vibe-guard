@@ -1,0 +1,152 @@
+name: 'vibe-guard'
+description: 'Security scanner for AI-generated code. Catches SQLi, secrets, SSRF, and 15 more patterns.'
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  path:
+    description: 'Directory or file to scan.'
+    default: '.'
+    required: false
+  severity:
+    description: >
+      Minimum severity to report. One of: CRITICAL, HIGH, MEDIUM, LOW.
+    default: 'MEDIUM'
+    required: false
+  ai-threshold:
+    description: >
+      AI confidence threshold 0.0–1.0. Files scoring above this receive
+      the full rule set. Files below receive a lighter scan.
+    default: '0.6'
+    required: false
+  fail-on-findings:
+    description: 'Exit with code 1 if any findings are present.'
+    default: 'true'
+    required: false
+  upload-sarif:
+    description: >
+      Upload SARIF results to GitHub Security tab via
+      github/codeql-action/upload-sarif. Requires
+      security-events: write permission in the calling workflow.
+    default: 'true'
+    required: false
+  python-version:
+    description: 'Python version to use.'
+    default: '3.11'
+    required: false
+
+outputs:
+  findings-count:
+    description: 'Total number of findings across all severities.'
+    value: ${{ steps.scan.outputs.findings-count }}
+  ai-files-detected:
+    description: 'Number of files identified as AI-generated.'
+    value: ${{ steps.scan.outputs.ai-files-detected }}
+  critical-count:
+    description: 'Number of CRITICAL severity findings.'
+    value: ${{ steps.scan.outputs.critical-count }}
+  high-count:
+    description: 'Number of HIGH severity findings.'
+    value: ${{ steps.scan.outputs.high-count }}
+  sarif-path:
+    description: 'Path to the generated SARIF file.'
+    value: ${{ steps.scan.outputs.sarif-path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: 'pip'
+
+    - name: Install vibe-guard
+      shell: bash
+      run: |
+        pip install vibe-guard --quiet
+
+    - name: Run vibe-guard scan
+      shell: bash
+      id: scan
+      run: |
+        SARIF_PATH="${{ runner.temp }}/vibe-guard-results.sarif"
+        JSON_PATH="${{ runner.temp }}/vibe-guard-summary.json"
+
+        vibe-guard scan "${{ inputs.path }}" \
+          --severity "${{ inputs.severity }}" \
+          --ai-threshold "${{ inputs.ai-threshold }}" \
+          --format sarif \
+          --output "${SARIF_PATH}" \
+          --no-fail
+
+        vibe-guard scan "${{ inputs.path }}" \
+          --severity "${{ inputs.severity }}" \
+          --ai-threshold "${{ inputs.ai-threshold }}" \
+          --format json \
+          --output "${JSON_PATH}" \
+          --no-fail
+
+        TOTAL=$(python3 -c "
+        import json, sys
+        with open('${JSON_PATH}') as f:
+            d = json.load(f)
+        s = d['summary']
+        print(s['total_findings'])
+        sys.exit(0)
+        " 2>/dev/null || echo "0")
+
+        CRITICAL=$(python3 -c "
+        import json
+        with open('${JSON_PATH}') as f:
+            d = json.load(f)
+        print(d['summary']['findings_by_severity'].get('CRITICAL', 0))
+        " 2>/dev/null || echo "0")
+
+        HIGH=$(python3 -c "
+        import json
+        with open('${JSON_PATH}') as f:
+            d = json.load(f)
+        print(d['summary']['findings_by_severity'].get('HIGH', 0))
+        " 2>/dev/null || echo "0")
+
+        AI=$(python3 -c "
+        import json
+        with open('${JSON_PATH}') as f:
+            d = json.load(f)
+        print(d['summary']['ai_files_detected'])
+        " 2>/dev/null || echo "0")
+
+        echo "findings-count=${TOTAL}" >> "${GITHUB_OUTPUT}"
+        echo "ai-files-detected=${AI}" >> "${GITHUB_OUTPUT}"
+        echo "critical-count=${CRITICAL}" >> "${GITHUB_OUTPUT}"
+        echo "high-count=${HIGH}" >> "${GITHUB_OUTPUT}"
+        echo "sarif-path=${SARIF_PATH}" >> "${GITHUB_OUTPUT}"
+
+        echo "## vibe-guard Results" >> "${GITHUB_STEP_SUMMARY}"
+        echo "" >> "${GITHUB_STEP_SUMMARY}"
+        echo "| Metric | Value |" >> "${GITHUB_STEP_SUMMARY}"
+        echo "|--------|-------|" >> "${GITHUB_STEP_SUMMARY}"
+        echo "| Total findings | ${TOTAL} |" >> "${GITHUB_STEP_SUMMARY}"
+        echo "| Critical | ${CRITICAL} |" >> "${GITHUB_STEP_SUMMARY}"
+        echo "| High | ${HIGH} |" >> "${GITHUB_STEP_SUMMARY}"
+        echo "| AI-generated files | ${AI} |" >> "${GITHUB_STEP_SUMMARY}"
+
+    - name: Upload SARIF to GitHub Security tab
+      if: inputs.upload-sarif == 'true' && always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif-path }}
+        category: 'vibe-guard'
+
+    - name: Fail if findings present
+      if: inputs.fail-on-findings == 'true'
+      shell: bash
+      run: |
+        COUNT="${{ steps.scan.outputs.findings-count }}"
+        if [ "${COUNT}" -gt "0" ]; then
+          echo "::error::vibe-guard found ${COUNT} security issue(s) in AI-generated code."
+          echo "See the Security tab for inline annotations."
+          exit 1
+        fi
