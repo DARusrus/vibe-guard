@@ -85,11 +85,7 @@ class TestAIClient:
     def test_parse_response_valid(self) -> None:
         """_parse_response must extract text from valid Gemini response."""
         client = AIClient()
-        resp = {
-            "candidates": [
-                {"content": {"parts": [{"text": "hello world"}]}}
-            ]
-        }
+        resp = {"candidates": [{"content": {"parts": [{"text": "hello world"}]}}]}
         assert client._parse_response(resp) == "hello world"
 
     def test_parse_response_invalid(self) -> None:
@@ -325,9 +321,9 @@ class TestScoreCalculation:
 
         findings = [
             make_finding("CRITICAL"),  # -25
-            make_finding("HIGH"),      # -10
-            make_finding("MEDIUM"),    # -3
-            make_finding("LOW"),       # -1
+            make_finding("HIGH"),  # -10
+            make_finding("MEDIUM"),  # -3
+            make_finding("LOW"),  # -1
         ]
         # Total deductions: 39
         # AI ratio: 2/10 = 20% < 30% → +5
@@ -401,9 +397,7 @@ class TestDiffMode:
 
         (tmp_path / "app.py").write_text("x = 1\n")
         scanner = Scanner()
-        result = scanner.scan_directory(
-            tmp_path, file_filter={tmp_path / "app.py"}
-        )
+        result = scanner.scan_directory(tmp_path, file_filter={tmp_path / "app.py"})
         assert result.diff_mode is True
 
     def test_full_scan_when_filter_is_none(self, tmp_path: Path) -> None:

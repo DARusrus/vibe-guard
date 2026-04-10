@@ -212,7 +212,9 @@ def scan(
     if smart_filter:
         result = _apply_smart_filter(result)
 
-    output_path = output if output is not None else (Path(config.output_path) if config.output_path else None)
+    output_path = (
+        output if output is not None else (Path(config.output_path) if config.output_path else None)
+    )
 
     try:
         reporter = get_reporter(config.default_format)
@@ -255,9 +257,7 @@ def _apply_smart_filter(result: ScanResult) -> ScanResult:
         if finding.severity in ("CRITICAL", "HIGH"):
             # Read file content for context
             try:
-                content = Path(finding.file_path).read_text(
-                    encoding="utf-8", errors="replace"
-                )
+                content = Path(finding.file_path).read_text(encoding="utf-8", errors="replace")
             except Exception:
                 filtered_findings.append(finding)
                 continue
@@ -293,8 +293,7 @@ def fix(
     auto: bool = typer.Option(
         False,
         "--auto",
-        help="Apply all fixes automatically without confirmation. "
-        "Use with caution.",
+        help="Apply all fixes automatically without confirmation. Use with caution.",
     ),
     dry_run: bool = typer.Option(
         False,

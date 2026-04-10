@@ -117,10 +117,7 @@ class SemgrepEngine:
             )
 
             # Newer Semgrep builds may not support --target-list.
-            if (
-                result.returncode > 1
-                and "unknown option '--target-list'" in result.stderr
-            ):
+            if result.returncode > 1 and "unknown option '--target-list'" in result.stderr:
                 fallback_cmd = [*base_cmd, *[str(file) for file in files]]
                 result = subprocess.run(
                     fallback_cmd,
@@ -150,9 +147,7 @@ class SemgrepEngine:
             logger.warning("Semgrep binary not found: %s", self.semgrep_bin)
             return []
         except subprocess.TimeoutExpired:
-            logger.warning(
-                "Semgrep timed out after %d seconds", timeout_seconds
-            )
+            logger.warning("Semgrep timed out after %d seconds", timeout_seconds)
             return []
         except json.JSONDecodeError:
             logger.warning("Failed to parse Semgrep JSON output")

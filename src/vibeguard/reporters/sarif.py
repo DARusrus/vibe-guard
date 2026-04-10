@@ -37,8 +37,7 @@ class SarifReporter(BaseReporter):
                         }
                     },
                     "results": [
-                        self._build_result_item(finding, rule_index)
-                        for finding in result.findings
+                        self._build_result_item(finding, rule_index) for finding in result.findings
                     ],
                 }
             ],
@@ -57,9 +56,7 @@ class SarifReporter(BaseReporter):
                 "id": finding.rule_id,
                 "name": _to_pascal_case(finding.rule_id),
                 "shortDescription": {"text": finding.message},
-                "fullDescription": {
-                    "text": f"{finding.message}. {finding.fix_guidance}".strip()
-                },
+                "fullDescription": {"text": f"{finding.message}. {finding.fix_guidance}".strip()},
                 "helpUri": "https://github.com/ahmbt/vibe-guard/blob/main/rules/",
                 "properties": {
                     "tags": [finding.rule_category, "security", "ai-generated"],
@@ -76,9 +73,7 @@ class SarifReporter(BaseReporter):
             "ruleId": finding.rule_id,
             "ruleIndex": rule_index.get(finding.rule_id, 0),
             "level": _SEVERITY_TO_LEVEL.get(finding.severity, "warning"),
-            "message": {
-                "text": f"{finding.message}. AI context: {finding.ai_context}".strip()
-            },
+            "message": {"text": f"{finding.message}. AI context: {finding.ai_context}".strip()},
             "locations": [
                 {
                     "physicalLocation": {

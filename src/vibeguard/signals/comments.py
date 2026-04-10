@@ -100,7 +100,9 @@ class CommentsSignal:
                 continue
 
             body_start = node.body[0].lineno if node.body else node.lineno
-            body_end = node.body[-1].end_lineno or node.body[-1].lineno if node.body else node.lineno
+            body_end = (
+                node.body[-1].end_lineno or node.body[-1].lineno if node.body else node.lineno
+            )
             body_line_count = max(0, body_end - body_start + 1)
 
             if body_line_count < 20:

@@ -17,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 API_KEY_ENV = "GEMINI_API_KEY"
 GEMINI_API_URL = (
-    "https://generativelanguage.googleapis.com/v1beta/"
-    "models/gemini-2.0-flash:generateContent"
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 )
 
 _TIMEOUT_SECONDS = 15
@@ -96,9 +95,7 @@ class AIClient:
                     response_json = json.loads(resp.read().decode("utf-8"))
                     return self._parse_response(response_json)
             except (urllib.error.URLError, OSError, json.JSONDecodeError) as exc:
-                logger.debug(
-                    "Gemini API call attempt %d failed: %s", attempt + 1, exc
-                )
+                logger.debug("Gemini API call attempt %d failed: %s", attempt + 1, exc)
                 if attempt >= _MAX_RETRIES:
                     return None
             except Exception:

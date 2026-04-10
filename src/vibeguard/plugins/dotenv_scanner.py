@@ -21,19 +21,23 @@ _PLACEHOLDER_RE = re.compile(
     r"(?i)(YOUR_|<|>|XXXX|example|placeholder|changeme|todo|fixme|replace)",
 )
 
-_ENV_TARGET_NAMES = frozenset({
-    ".env",
-    ".env.local",
-    ".env.production",
-    ".env.staging",
-    ".env.development",
-})
+_ENV_TARGET_NAMES = frozenset(
+    {
+        ".env",
+        ".env.local",
+        ".env.production",
+        ".env.staging",
+        ".env.development",
+    }
+)
 
-_ENV_SKIP_NAMES = frozenset({
-    ".env.example",
-    ".env.template",
-    ".env.sample",
-})
+_ENV_SKIP_NAMES = frozenset(
+    {
+        ".env.example",
+        ".env.template",
+        ".env.sample",
+    }
+)
 
 _KV_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)")
 
@@ -55,9 +59,7 @@ def _shannon_entropy(s: str) -> float:
     for ch in s:
         freq[ch] = freq.get(ch, 0) + 1
     length = len(s)
-    return -sum(
-        (count / length) * math.log2(count / length) for count in freq.values()
-    )
+    return -sum((count / length) * math.log2(count / length) for count in freq.values())
 
 
 class DotenvPlugin(BasePlugin):
@@ -256,26 +258,28 @@ class DotenvPlugin(BasePlugin):
                 is_secret = True
 
             if is_secret:
-                findings.append(self._make_finding(
-                    rule_id="vibeguard-dotenv-exposed-secret",
-                    severity="CRITICAL",
-                    file_path=str(env_file),
-                    line=line_num,
-                    message=(
-                        f"High-entropy secret detected in .env file for key '{key}'. "
-                        f"If this file is committed, the credential is exposed."
-                    ),
-                    fix_guidance=(
-                        "Never commit .env files. Add '.env' to .gitignore "
-                        "and rotate this credential immediately."
-                    ),
-                    cwe_id="CWE-798: Use of Hard-coded Credentials",
-                    ai_context=(
-                        "AI code generators frequently create .env files "
-                        "with example credentials that look realistic and have "
-                        "high entropy, making them indistinguishable from real secrets."
-                    ),
-                    rule_category="dotenv",
-                ))
+                findings.append(
+                    self._make_finding(
+                        rule_id="vibeguard-dotenv-exposed-secret",
+                        severity="CRITICAL",
+                        file_path=str(env_file),
+                        line=line_num,
+                        message=(
+                            f"High-entropy secret detected in .env file for key '{key}'. "
+                            f"If this file is committed, the credential is exposed."
+                        ),
+                        fix_guidance=(
+                            "Never commit .env files. Add '.env' to .gitignore "
+                            "and rotate this credential immediately."
+                        ),
+                        cwe_id="CWE-798: Use of Hard-coded Credentials",
+                        ai_context=(
+                            "AI code generators frequently create .env files "
+                            "with example credentials that look realistic and have "
+                            "high entropy, making them indistinguishable from real secrets."
+                        ),
+                        rule_category="dotenv",
+                    )
+                )
 
         return findings

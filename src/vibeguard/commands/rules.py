@@ -59,7 +59,9 @@ def list_rules(
     py_count = sum(1 for row in filtered if row["source_language"] == "python")
     js_count = sum(1 for row in filtered if row["source_language"] == "javascript")
     ts_count = sum(1 for row in filtered if row["source_language"] == "typescript")
-    console.print(f"Total: {len(filtered)} rules ({py_count} Python, {js_count} JavaScript, {ts_count} TypeScript)")
+    console.print(
+        f"Total: {len(filtered)} rules ({py_count} Python, {js_count} JavaScript, {ts_count} TypeScript)"
+    )
 
 
 def _load_rules() -> list[dict[str, str]]:
@@ -83,9 +85,7 @@ def _load_rules() -> list[dict[str, str]]:
             continue
 
         metadata = (
-            first_rule.get("metadata", {})
-            if isinstance(first_rule.get("metadata"), dict)
-            else {}
+            first_rule.get("metadata", {}) if isinstance(first_rule.get("metadata"), dict) else {}
         )
         cwe = str(metadata.get("cwe", ""))
         cwe_short = cwe.split(":", 1)[0]

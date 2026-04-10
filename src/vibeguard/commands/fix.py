@@ -63,10 +63,7 @@ def run_fix(
     skipped_count = 0
     errored_count = 0
 
-    console.print(
-        f"[bold]Found {len(sorted_findings)} findings. "
-        f"Processing fixes...[/bold]\n"
-    )
+    console.print(f"[bold]Found {len(sorted_findings)} findings. Processing fixes...[/bold]\n")
 
     for i, finding in enumerate(sorted_findings, 1):
         severity_style = {
@@ -111,9 +108,7 @@ def run_fix(
 
         # Show the diff
         console.print()
-        console.print(
-            Syntax(fix_diff, "diff", theme="monokai", word_wrap=True)
-        )
+        console.print(Syntax(fix_diff, "diff", theme="monokai", word_wrap=True))
 
         if dry_run:
             console.print("  [dim]Dry run — not applying[/dim]")
@@ -204,7 +199,7 @@ def _apply_fix(
         if not replacement_lines:
             return False
 
-        source_lines[line_idx:line_idx + 1] = replacement_lines
+        source_lines[line_idx : line_idx + 1] = replacement_lines
         p.write_text("".join(source_lines), encoding="utf-8")
         return True
     except Exception:

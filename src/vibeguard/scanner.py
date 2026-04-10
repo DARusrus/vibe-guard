@@ -230,8 +230,7 @@ class Scanner:
                 filtered_files.add(resolved)
 
             detector_results = [
-                self.detector.score_file(file_path)
-                for file_path in sorted(filtered_files, key=str)
+                self.detector.score_file(file_path) for file_path in sorted(filtered_files, key=str)
             ]
             detector_results = sorted(
                 detector_results,
@@ -242,9 +241,7 @@ class Scanner:
             # Step 1: Detect AI-generated files
             detector_results = self.detector.score_directory(target, extensions)
 
-        dr_map: dict[str, DetectorResult] = {
-            dr.file_path: dr for dr in detector_results
-        }
+        dr_map: dict[str, DetectorResult] = {dr.file_path: dr for dr in detector_results}
 
         # Step 2: Group files by scan tier
         tier_groups: dict[str, list[Path]] = {
@@ -283,9 +280,7 @@ class Scanner:
 
         secrets_findings = self.secrets.scan_files(
             all_files,
-            existing_findings=[
-                f for f in semgrep_findings if f.rule_category == "secrets"
-            ],
+            existing_findings=[f for f in semgrep_findings if f.rule_category == "secrets"],
         )
 
         # Attach file_confidence to secrets findings
@@ -322,13 +317,12 @@ class Scanner:
 
         elapsed = time.monotonic() - start_time
 
-        ai_count = sum(
-            1 for dr in detector_results if dr.is_ai_generated()
-        )
+        ai_count = sum(1 for dr in detector_results if dr.is_ai_generated())
 
         # Count active plugins in rules_applied
         active_plugins = sum(
-            1 for p in [self.sca, self.dotenv, self.mcp_config, self.prompt_injection]
+            1
+            for p in [self.sca, self.dotenv, self.mcp_config, self.prompt_injection]
             if p.is_available()
         )
 
@@ -388,9 +382,7 @@ class Scanner:
         # Run secrets plugin
         secrets_findings = self.secrets.scan_files(
             [target],
-            existing_findings=[
-                f for f in findings if f.rule_category == "secrets"
-            ],
+            existing_findings=[f for f in findings if f.rule_category == "secrets"],
         )
         for sf in secrets_findings:
             sf.file_confidence = dr.confidence
@@ -418,7 +410,8 @@ class Scanner:
         ai_count = 1 if dr.is_ai_generated() else 0
 
         active_plugins = sum(
-            1 for p in [self.sca, self.dotenv, self.mcp_config, self.prompt_injection]
+            1
+            for p in [self.sca, self.dotenv, self.mcp_config, self.prompt_injection]
             if p.is_available()
         )
 
@@ -537,10 +530,7 @@ class Scanner:
             Filtered list containing only findings at or above min_severity.
         """
         min_rank = self._severity_order.get(self.min_severity, 2)
-        return [
-            f for f in findings
-            if self._severity_order.get(f.severity, 99) <= min_rank
-        ]
+        return [f for f in findings if self._severity_order.get(f.severity, 99) <= min_rank]
 
     def _deduplicate(self, findings: list[Finding]) -> list[Finding]:
         """Remove exact duplicates. Key: (rule_id, file_path, line).

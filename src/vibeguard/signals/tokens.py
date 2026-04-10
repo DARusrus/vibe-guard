@@ -53,7 +53,9 @@ class TokenSignal:
                 continue
             if not isinstance(assign_stmt.targets[0], ast.Name):
                 continue
-            if not isinstance(return_stmt, ast.Return) or not isinstance(return_stmt.value, ast.Name):
+            if not isinstance(return_stmt, ast.Return) or not isinstance(
+                return_stmt.value, ast.Name
+            ):
                 continue
 
             var_name = assign_stmt.targets[0].id
@@ -100,7 +102,9 @@ class TokenSignal:
         return min(hits * 0.15, 0.20)
 
     def _score_wildcard_then_explicit_import(self, source_code: str) -> float:
-        wildcard_modules = {match.group(1) for match in self._WILDCARD_IMPORT_RE.finditer(source_code)}
+        wildcard_modules = {
+            match.group(1) for match in self._WILDCARD_IMPORT_RE.finditer(source_code)
+        }
         explicit_modules = {
             match.group(1)
             for match in self._EXPLICIT_IMPORT_RE.finditer(source_code)

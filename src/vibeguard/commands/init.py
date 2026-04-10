@@ -35,7 +35,9 @@ def run_init_wizard(path: Path = Path(".")) -> None:
     )
     fail_ci = typer.confirm("Fail CI on findings? [yes]:", default=True)
 
-    _write_config_file(config_file, min_severity=min_severity, ai_threshold=ai_threshold, fail_ci=fail_ci)
+    _write_config_file(
+        config_file, min_severity=min_severity, ai_threshold=ai_threshold, fail_ci=fail_ci
+    )
     console.print("[green]✓ Created .vibeguard.toml[/green]")
     created_items.append((".vibeguard.toml", "created"))
 
@@ -60,12 +62,14 @@ def run_init_wizard(path: Path = Path(".")) -> None:
     console.print("Run 'vibe-guard scan .' to start scanning.")
 
 
-def _write_config_file(config_file: Path, min_severity: str, ai_threshold: float, fail_ci: bool) -> None:
+def _write_config_file(
+    config_file: Path, min_severity: str, ai_threshold: float, fail_ci: bool
+) -> None:
     """Write the main .vibeguard.toml file."""
     config_file.parent.mkdir(parents=True, exist_ok=True)
     content = (
         "[vibeguard]\n"
-        f"min_severity = \"{min_severity}\"\n"
+        f'min_severity = "{min_severity}"\n'
         f"ai_threshold = {ai_threshold}\n"
         f"fail_on_findings = {str(fail_ci).lower()}\n"
     )

@@ -90,9 +90,7 @@ class SecretsPlugin:
                 timeout=120,
             )
         except FileNotFoundError:
-            logger.warning(
-                "detect-secrets binary not found: %s", self.detect_secrets_bin
-            )
+            logger.warning("detect-secrets binary not found: %s", self.detect_secrets_bin)
             return []
         except subprocess.TimeoutExpired:
             logger.warning("detect-secrets timed out")

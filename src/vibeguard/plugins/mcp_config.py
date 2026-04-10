@@ -43,9 +43,7 @@ def _shannon_entropy(s: str) -> float:
     for ch in s:
         freq[ch] = freq.get(ch, 0) + 1
     length = len(s)
-    return -sum(
-        (count / length) * math.log2(count / length) for count in freq.values()
-    )
+    return -sum((count / length) * math.log2(count / length) for count in freq.values())
 
 
 class MCPConfigPlugin(BasePlugin):
@@ -115,9 +113,7 @@ class MCPConfigPlugin(BasePlugin):
                         f"MCP config file {mcp_file.name} is not in .gitignore. "
                         f"AI agent credentials may be committed to version control."
                     ),
-                    fix_guidance=(
-                        f"Add '{rel_path}' to .gitignore immediately."
-                    ),
+                    fix_guidance=(f"Add '{rel_path}' to .gitignore immediately."),
                     cwe_id="CWE-538: Insertion of Sensitive Information into Externally-Accessible File",
                     ai_context=(
                         "AI coding agents store API keys and service credentials "
@@ -185,7 +181,10 @@ class MCPConfigPlugin(BasePlugin):
             return []
 
     def _is_in_gitignore(
-        self, rel_path: str, filename: str, patterns: list[str],
+        self,
+        rel_path: str,
+        filename: str,
+        patterns: list[str],
     ) -> bool:
         """Check if a path matches any .gitignore pattern.
 
@@ -298,25 +297,27 @@ class MCPConfigPlugin(BasePlugin):
         if is_secret:
             # Mask the value
             masked = value[:6] + "..." if len(value) > 6 else "***"
-            findings.append(self._make_finding(
-                rule_id="vibeguard-mcp-config-secret",
-                severity="CRITICAL",
-                file_path=str(mcp_file),
-                line=1,
-                message=(
-                    f"Secret detected in MCP config file for key '{key}': "
-                    f"'{masked}'. AI agent credentials must not be committed."
-                ),
-                fix_guidance=(
-                    "Move this credential to an environment variable. "
-                    "Use runtime injection instead of hardcoding in config."
-                ),
-                cwe_id="CWE-798: Use of Hard-coded Credentials",
-                ai_context=(
-                    "AI coding agents store API keys and service credentials "
-                    "in MCP configuration files. These files are frequently "
-                    "committed to version control, exposing all connected "
-                    "service credentials."
-                ),
-                rule_category="mcp_config",
-            ))
+            findings.append(
+                self._make_finding(
+                    rule_id="vibeguard-mcp-config-secret",
+                    severity="CRITICAL",
+                    file_path=str(mcp_file),
+                    line=1,
+                    message=(
+                        f"Secret detected in MCP config file for key '{key}': "
+                        f"'{masked}'. AI agent credentials must not be committed."
+                    ),
+                    fix_guidance=(
+                        "Move this credential to an environment variable. "
+                        "Use runtime injection instead of hardcoding in config."
+                    ),
+                    cwe_id="CWE-798: Use of Hard-coded Credentials",
+                    ai_context=(
+                        "AI coding agents store API keys and service credentials "
+                        "in MCP configuration files. These files are frequently "
+                        "committed to version control, exposing all connected "
+                        "service credentials."
+                    ),
+                    rule_category="mcp_config",
+                )
+            )

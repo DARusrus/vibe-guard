@@ -140,8 +140,7 @@ class TerminalReporter(BaseReporter):
                 renderables.append(Text(""))
                 renderables.append(
                     Text.from_markup(
-                        f"[bold]What this means:[/bold]\n"
-                        f"[italic dim]{explanation}[/italic dim]"
+                        f"[bold]What this means:[/bold]\n[italic dim]{explanation}[/italic dim]"
                     )
                 )
 
@@ -183,7 +182,9 @@ class TerminalReporter(BaseReporter):
             summary_text += f"\nDiff mode:          {result.changed_files_count} changed files"
 
         if result.filtered_count > 0:
-            summary_text += f"\nSmart filter:       removed {result.filtered_count} likely false positives"
+            summary_text += (
+                f"\nSmart filter:       removed {result.filtered_count} likely false positives"
+            )
 
         console.print(Panel(summary_text, title="Scan Complete", expand=True))
 

@@ -28,9 +28,18 @@ INJECTION_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"(?i)what\s+(are|were)\s+your\s+instructions"),
 ]
 
-_SCANNABLE_EXTENSIONS = frozenset({
-    ".py", ".js", ".ts", ".jsx", ".tsx", ".json", ".yaml", ".yml",
-})
+_SCANNABLE_EXTENSIONS = frozenset(
+    {
+        ".py",
+        ".js",
+        ".ts",
+        ".jsx",
+        ".tsx",
+        ".json",
+        ".yaml",
+        ".yml",
+    }
+)
 
 _STRING_DELIMITERS = re.compile(r"""(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')""")
 
@@ -69,7 +78,9 @@ class PromptInjectionPlugin(BasePlugin):
             return []
 
     def _scan_impl(
-        self, files: list[Path], project_root: Path,
+        self,
+        files: list[Path],
+        project_root: Path,
     ) -> list[Finding]:
         """Core scan logic."""
         findings: list[Finding] = []
@@ -89,7 +100,9 @@ class PromptInjectionPlugin(BasePlugin):
         return findings
 
     def _collect_scannable_files(
-        self, files: list[Path], project_root: Path,
+        self,
+        files: list[Path],
+        project_root: Path,
     ) -> list[Path]:
         """Collect files to scan from both the provided list and project walk.
 
@@ -156,29 +169,31 @@ class PromptInjectionPlugin(BasePlugin):
 
                 for pattern in INJECTION_PATTERNS:
                     if pattern.search(inner):
-                        findings.append(self._make_finding(
-                            rule_id="vibeguard-prompt-injection-string",
-                            severity="CRITICAL",
-                            file_path=str(file_path),
-                            line=line_num,
-                            message=(
-                                "Adversarial LLM manipulation string detected in source. "
-                                "This pattern attempts to override AI code review tools."
-                            ),
-                            fix_guidance=(
-                                "Remove this string. If it appeared in a dependency, "
-                                "do not install that package — report it to the "
-                                "registry as malicious."
-                            ),
-                            cwe_id="CWE-116: Improper Encoding or Escaping of Output",
-                            ai_context=(
-                                "Malicious packages embed prompt injection strings to "
-                                "manipulate LLM-based code reviewers into classifying "
-                                "them as safe. This was confirmed in a real npm package "
-                                "(eslint-plugin-unicorn-ts-2) in 2026."
-                            ),
-                            rule_category="prompt_injection",
-                        ))
+                        findings.append(
+                            self._make_finding(
+                                rule_id="vibeguard-prompt-injection-string",
+                                severity="CRITICAL",
+                                file_path=str(file_path),
+                                line=line_num,
+                                message=(
+                                    "Adversarial LLM manipulation string detected in source. "
+                                    "This pattern attempts to override AI code review tools."
+                                ),
+                                fix_guidance=(
+                                    "Remove this string. If it appeared in a dependency, "
+                                    "do not install that package — report it to the "
+                                    "registry as malicious."
+                                ),
+                                cwe_id="CWE-116: Improper Encoding or Escaping of Output",
+                                ai_context=(
+                                    "Malicious packages embed prompt injection strings to "
+                                    "manipulate LLM-based code reviewers into classifying "
+                                    "them as safe. This was confirmed in a real npm package "
+                                    "(eslint-plugin-unicorn-ts-2) in 2026."
+                                ),
+                                rule_category="prompt_injection",
+                            )
+                        )
                         break  # One finding per string, avoid duplicates
 
         return findings

@@ -120,7 +120,13 @@ class TestJsonReporter:
 
     def test_json_has_required_top_level_keys(self, sample_result: ScanResult) -> None:
         data = json.loads(get_reporter("json").render(sample_result))
-        for key in ("vibe_guard_version", "scan_timestamp", "summary", "findings", "detector_results"):
+        for key in (
+            "vibe_guard_version",
+            "scan_timestamp",
+            "summary",
+            "findings",
+            "detector_results",
+        ):
             assert key in data
 
     def test_json_summary_counts_are_correct(self, sample_result: ScanResult) -> None:

@@ -25,9 +25,7 @@ class Config:
 
     ai_threshold: float = 0.6
     min_severity: str = "MEDIUM"
-    extensions: list[str] = field(
-        default_factory=lambda: [".py", ".js", ".ts", ".jsx", ".tsx"]
-    )
+    extensions: list[str] = field(default_factory=lambda: [".py", ".js", ".ts", ".jsx", ".tsx"])
 
     default_format: str = "terminal"
     output_path: str | None = None

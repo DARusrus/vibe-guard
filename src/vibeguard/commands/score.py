@@ -73,9 +73,7 @@ def calculate_score(result: ScanResult) -> tuple[int, str]:
             counts[f.severity] += 1
 
     # Deductions (uncapped)
-    deductions = sum(
-        counts[sev] * pts for sev, pts in _DEDUCTIONS.items()
-    )
+    deductions = sum(counts[sev] * pts for sev, pts in _DEDUCTIONS.items())
 
     # Bonuses
     bonuses = 0
@@ -107,10 +105,7 @@ def generate_badge_url(grade: str, score: int) -> str:
     Example: https://img.shields.io/badge/vibe--guard-A%20(94)-brightgreen
     """
     color = _GRADE_COLORS.get(grade, "lightgrey")
-    return (
-        f"https://img.shields.io/badge/"
-        f"vibe--guard-{grade}%20({score})-{color}"
-    )
+    return f"https://img.shields.io/badge/vibe--guard-{grade}%20({score})-{color}"
 
 
 def store_history(

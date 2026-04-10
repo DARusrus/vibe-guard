@@ -43,10 +43,10 @@ def _version_lt(a: str, b: str) -> bool:
 # Dependency file parsers ──────────────────────────────────────────────
 
 _REQ_LINE_RE = re.compile(
-    r"^([A-Za-z0-9][-A-Za-z0-9_.]*)"   # package name
-    r"(?:\[.*?\])?"                      # optional extras
-    r"(?:\s*(==|>=|<=|~=|!=|>|<)\s*"     # operator
-    r"([A-Za-z0-9][-A-Za-z0-9_.]*))?",   # version
+    r"^([A-Za-z0-9][-A-Za-z0-9_.]*)"  # package name
+    r"(?:\[.*?\])?"  # optional extras
+    r"(?:\s*(==|>=|<=|~=|!=|>|<)\s*"  # operator
+    r"([A-Za-z0-9][-A-Za-z0-9_.]*))?",  # version
 )
 
 _NPM_VERSION_RE = re.compile(r"(\d+\.\d+\.\d+)")
@@ -139,7 +139,9 @@ class SCAPlugin(BasePlugin):
             return []
 
         # Parse all dependency files
-        all_deps: list[tuple[str, str, str, Path, int]] = []  # (name, version, ecosystem, file, line)
+        all_deps: list[
+            tuple[str, str, str, Path, int]
+        ] = []  # (name, version, ecosystem, file, line)
         for dep_file, ecosystem in dep_files:
             try:
                 deps = self._parse_dependency_file(dep_file, ecosystem)
@@ -155,7 +157,10 @@ class SCAPlugin(BasePlugin):
             corpus_set = self._corpus.get(ecosystem, set())
             if normalized in corpus_set:
                 f = self._make_slopsquatting_finding(
-                    normalized, ecosystem, str(dep_file), line_num,
+                    normalized,
+                    ecosystem,
+                    str(dep_file),
+                    line_num,
                 )
                 key = (f.rule_id, f.file_path, f.line)
                 if key not in seen_keys:
@@ -172,7 +177,11 @@ class SCAPlugin(BasePlugin):
             if not version:
                 continue
             cve_findings = self._check_cve_offline(
-                pkg_name.lower().strip(), version, ecosystem, str(dep_file), line_num,
+                pkg_name.lower().strip(),
+                version,
+                ecosystem,
+                str(dep_file),
+                line_num,
             )
             for f in cve_findings:
                 key = (f.rule_id, f.file_path, f.line)
@@ -184,7 +193,9 @@ class SCAPlugin(BasePlugin):
         for pkg_name, version, ecosystem, dep_file, line_num in all_deps:
             if not version:
                 f = self._make_unpinned_finding(
-                    pkg_name.lower().strip(), str(dep_file), line_num,
+                    pkg_name.lower().strip(),
+                    str(dep_file),
+                    line_num,
                 )
                 key = (f.rule_id, f.file_path, f.line)
                 if key not in seen_keys:
@@ -202,7 +213,8 @@ class SCAPlugin(BasePlugin):
         return findings
 
     def _find_dependency_files(
-        self, project_root: Path,
+        self,
+        project_root: Path,
     ) -> list[tuple[Path, str]]:
         """Walk project_root for dependency files."""
         found: list[tuple[Path, str]] = []
@@ -216,12 +228,16 @@ class SCAPlugin(BasePlugin):
         return found
 
     def _parse_dependency_file(
-        self, path: Path, ecosystem: str,
+        self,
+        path: Path,
+        ecosystem: str,
     ) -> list[tuple[str, str, int]]:
         """Parse a dependency file into (name, version, line_number) tuples."""
         filename = path.name
         if filename in (
-            "requirements.txt", "requirements-dev.txt", "requirements-test.txt",
+            "requirements.txt",
+            "requirements-dev.txt",
+            "requirements-test.txt",
         ):
             return self._parse_requirements_txt(path)
         if filename == "package.json":
@@ -318,13 +334,15 @@ class SCAPlugin(BasePlugin):
     # ── Slopsquatting ─────────────────────────────────────────────────
 
     def _make_slopsquatting_finding(
-        self, name: str, ecosystem: str, file_path: str, line: int,
+        self,
+        name: str,
+        ecosystem: str,
+        file_path: str,
+        line: int,
     ) -> Finding:
         """Create a CRITICAL slopsquatting finding."""
         registry_url = (
-            f"pypi.org/project/{name}"
-            if ecosystem == "python"
-            else f"npmjs.com/package/{name}"
+            f"pypi.org/project/{name}" if ecosystem == "python" else f"npmjs.com/package/{name}"
         )
         return self._make_finding(
             rule_id="vibeguard-sca-slopsquatting",
@@ -395,7 +413,10 @@ class SCAPlugin(BasePlugin):
                         self._registry_cache[name] = exists
                         if not exists:
                             f = self._make_slopsquatting_finding(
-                                name, eco, str(dep_file), line_num,
+                                name,
+                                eco,
+                                str(dep_file),
+                                line_num,
                             )
                             key = (f.rule_id, f.file_path, f.line)
                             if key not in seen_keys:
@@ -474,26 +495,31 @@ class SCAPlugin(BasePlugin):
         cve_list = pkg_info.get("known_cves", [])
         severity = pkg_info.get("severity", "HIGH")
 
-        return [self._make_finding(
-            rule_id="vibeguard-sca-known-cve",
-            severity=severity,
-            file_path=file_path,
-            line=line,
-            message=(
-                f"Package '{name}=={version}' has known CVEs: "
-                f"{', '.join(cve_list)}. Safe version: {safe_from}."
-            ),
-            fix_guidance=f"Upgrade to {name}>={safe_from}",
-            cwe_id="CWE-1395: Dependency on Vulnerable Third-Party Component",
-            ai_context=(
-                "AI code generators frequently recommend outdated package "
-                "versions with known security vulnerabilities."
-            ),
-            rule_category="sca",
-        )]
+        return [
+            self._make_finding(
+                rule_id="vibeguard-sca-known-cve",
+                severity=severity,
+                file_path=file_path,
+                line=line,
+                message=(
+                    f"Package '{name}=={version}' has known CVEs: "
+                    f"{', '.join(cve_list)}. Safe version: {safe_from}."
+                ),
+                fix_guidance=f"Upgrade to {name}>={safe_from}",
+                cwe_id="CWE-1395: Dependency on Vulnerable Third-Party Component",
+                ai_context=(
+                    "AI code generators frequently recommend outdated package "
+                    "versions with known security vulnerabilities."
+                ),
+                rule_category="sca",
+            )
+        ]
 
     def _check_osv_api(
-        self, name: str, version: str, ecosystem: str,
+        self,
+        name: str,
+        version: str,
+        ecosystem: str,
     ) -> list[dict]:
         """Query the OSV.dev API for vulnerabilities.
 
@@ -506,10 +532,12 @@ class SCAPlugin(BasePlugin):
             List of vulnerability dicts from OSV response.
         """
         osv_ecosystem = {"python": "PyPI", "npm": "npm"}.get(ecosystem, ecosystem)
-        payload = json.dumps({
-            "package": {"name": name, "ecosystem": osv_ecosystem},
-            "version": version,
-        }).encode("utf-8")
+        payload = json.dumps(
+            {
+                "package": {"name": name, "ecosystem": osv_ecosystem},
+                "version": version,
+            }
+        ).encode("utf-8")
 
         try:
             req = Request(
@@ -528,7 +556,10 @@ class SCAPlugin(BasePlugin):
     # ── Unpinned / missing lock ───────────────────────────────────────
 
     def _make_unpinned_finding(
-        self, name: str, file_path: str, line: int,
+        self,
+        name: str,
+        file_path: str,
+        line: int,
     ) -> Finding:
         """Create a MEDIUM finding for an unpinned dependency."""
         return self._make_finding(
@@ -577,32 +608,32 @@ class SCAPlugin(BasePlugin):
                 continue
             checked.add(manifest_name)
 
-            has_lock = any(
-                (project_root / lock).exists() for lock in lock_candidates
-            )
+            has_lock = any((project_root / lock).exists() for lock in lock_candidates)
             if not has_lock:
-                findings.append(self._make_finding(
-                    rule_id="vibeguard-sca-no-lock-file",
-                    severity="MEDIUM",
-                    file_path=str(dep_file),
-                    line=1,
-                    message=(
-                        f"'{manifest_name}' exists but no corresponding lock file "
-                        f"was found. Without a lock file, dependency resolution "
-                        f"is non-deterministic."
-                    ),
-                    fix_guidance=(
-                        "Generate a lock file to pin transitive dependencies: "
-                        "pip freeze > requirements.txt, poetry lock, or npm install"
-                    ),
-                    cwe_id="CWE-1357: Reliance on Insufficiently Trustworthy Component",
-                    ai_context=(
-                        "AI-generated projects frequently omit lock files, "
-                        "making builds non-reproducible and vulnerable to "
-                        "supply chain attacks."
-                    ),
-                    rule_category="sca",
-                ))
+                findings.append(
+                    self._make_finding(
+                        rule_id="vibeguard-sca-no-lock-file",
+                        severity="MEDIUM",
+                        file_path=str(dep_file),
+                        line=1,
+                        message=(
+                            f"'{manifest_name}' exists but no corresponding lock file "
+                            f"was found. Without a lock file, dependency resolution "
+                            f"is non-deterministic."
+                        ),
+                        fix_guidance=(
+                            "Generate a lock file to pin transitive dependencies: "
+                            "pip freeze > requirements.txt, poetry lock, or npm install"
+                        ),
+                        cwe_id="CWE-1357: Reliance on Insufficiently Trustworthy Component",
+                        ai_context=(
+                            "AI-generated projects frequently omit lock files, "
+                            "making builds non-reproducible and vulnerable to "
+                            "supply chain attacks."
+                        ),
+                        rule_category="sca",
+                    )
+                )
         return findings
 
     # ── Data loading ──────────────────────────────────────────────────

@@ -8,6 +8,7 @@ including both correct implementations and security anti-patterns.
 Note: This file is designed for security scanning tests. All vulnerabilities
 are intentional examples of patterns commonly produced by AI assistants.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -34,17 +35,24 @@ except ImportError:
     # Provide minimal stubs so the file is importable without Flask
     class _StubFlask:
         """Minimal Flask stub for import compatibility."""
+
         def __init__(self, name: str) -> None:
             self.name = name
+
         def route(self, *args: object, **kwargs: object):  # type: ignore[no-untyped-def]
             """Return identity decorator."""
+
             def decorator(f):  # type: ignore[no-untyped-def]
                 return f
+
             return decorator
+
         def errorhandler(self, *args: object, **kwargs: object):  # type: ignore[no-untyped-def]
             """Return identity decorator."""
+
             def decorator(f):  # type: ignore[no-untyped-def]
                 return f
+
             return decorator
 
     Flask = _StubFlask  # type: ignore[misc,assignment]
@@ -55,10 +63,12 @@ except ImportError:
 
     class _StubRequest:
         """Stub request object."""
+
         args: dict = {}  # type: ignore[assignment]
         json: dict = {}
         form: dict = {}
         files: dict = {}
+
         def get_json(self) -> dict:
             """Return empty JSON body."""
             return {}
@@ -109,6 +119,7 @@ def verify_api_key(provided_key: str) -> bool:
 
 # ─── user management routes ────────────────────────────────────────
 
+
 @app.route("/api/users", methods=["GET"])
 def list_users():
     """Retrieve all users matching an optional search filter.
@@ -144,6 +155,7 @@ def create_user():
 
     class User:
         """Simple user model for database operations."""
+
         def __init__(self, **kwargs: object) -> None:
             self.__dict__.update(kwargs)
 
@@ -207,6 +219,7 @@ def verify_token():
 
 # ─── file management routes ────────────────────────────────────────
 
+
 @app.route("/api/files/upload", methods=["POST"])
 def upload_file():
     """Handle file uploads and save to the uploads directory.
@@ -240,6 +253,7 @@ def download_file():
 
 
 # ─── proxy and integration routes ──────────────────────────────────
+
 
 @app.route("/api/proxy", methods=["GET"])
 def proxy_request():
@@ -283,6 +297,7 @@ def admin_execute():
 
 # ─── data serialization routes ─────────────────────────────────────
 
+
 @app.route("/api/data/import", methods=["POST"])
 def import_data():
     """Import serialized data from a pickle-encoded payload.
@@ -293,6 +308,7 @@ def import_data():
         JSON response confirming data import.
     """
     import base64
+
     raw_data = request.get_json().get("data", "")
     data = base64.b64decode(raw_data)
     # Deserialize the imported data object
@@ -301,6 +317,7 @@ def import_data():
 
 
 # ─── error handling ────────────────────────────────────────────────
+
 
 @app.errorhandler(500)
 def handle_internal_error(e: Exception):
@@ -329,9 +346,7 @@ def list_products():
         category = request.args.get("category", "")
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(
-            f"SELECT * FROM products WHERE category = '{category}'"
-        )
+        cursor.execute(f"SELECT * FROM products WHERE category = '{category}'")
         products = cursor.fetchall()
         conn.close()
         return jsonify(products=[dict(row) for row in products])

@@ -1,0 +1,58 @@
+============================================================
+AUDIT CHECK 1: Rule files on disk
+============================================================
+Total rule files on disk: 64
+  dockerfile: 2 rules
+  github-actions: 2 rules
+  javascript: 18 rules
+  kubernetes: 1 rules
+Traceback (most recent call last):
+  python: 33 rules
+  shell: 3 rules
+  sql: 1 rules
+  typescript: 4 rules
+
+============================================================
+AUDIT CHECK 2: Test collection count
+============================================================
+Total tests collected: 0
+  tests/test_cli.py: 13
+  tests/test_detector.py: 26
+  tests/test_plan2_ai.py: 32
+  tests/test_plan2_plugins.py: 41
+  tests/test_reporters.py: 16
+  tests/test_scanner.py: 29
+
+============================================================
+AUDIT CHECK 3: Score formula verification
+============================================================
+  No findings: score=100, grade=A (expect 100/A)
+  4 CRITICALs: score=5, grade=F (expect <=5/F)
+  File "C:\Users\ahmbt\OneDrive\Desktop\VibeGuard\_audit_checks.py", line 110, in <module>
+  Mixed (1C+1H+1M+1L, 20% AI): score=66, grade=C (expect 66/C)
+  Badge URL: https://img.shields.io/badge/vibe--guard-A%20(95)-brightgreen
+
+============================================================
+AUDIT CHECK 4: Semgrep validate
+============================================================
+  Exit code: 2
+
+============================================================
+AUDIT CHECK 5: AI degradation
+============================================================
+  AutoFixer available: False (expect False)
+  ContextFilter available: False (expect False)
+  Explainer available: False (expect False)
+  AI degradation: OK
+
+============================================================
+AUDIT CHECK 6: TIER_RULES invariants
+============================================================
+  FULL: 64 rules
+  MEDIUM: 19 rules
+  CRITICAL_ONLY: 8 rules
+    print(f"  MEDIUM \u2282 FULL: {medium.issubset(full)}")
+  File "C:\Program Files\Python311\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2282' in position 9: character maps to <undefined>

@@ -1,0 +1,223 @@
+{
+  "vibe_guard_version": "0.1.0",
+  "scan_timestamp": "2026-04-09T08:54:06.804828+00:00",
+  "summary": {
+    "files_scanned": 2,
+    "ai_files_detected": 0,
+    "total_findings": 13,
+    "findings_by_severity": {
+      "CRITICAL": 9,
+      "HIGH": 4,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "scan_duration_seconds": 25.204,
+    "rules_applied": 23
+  },
+  "detector_results": [
+    {
+      "file_path": "tests\\fixtures\\vulnerable_app\\utils.py",
+      "confidence": 0.4425,
+      "scan_tier": "MEDIUM",
+      "signals": {
+        "comments": 0.25,
+        "structure": 0.75,
+        "tokens": 0.3
+      }
+    },
+    {
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "confidence": 0.4125,
+      "scan_tier": "MEDIUM",
+      "signals": {
+        "comments": 0.5,
+        "structure": 0.6,
+        "tokens": 0.15
+      }
+    }
+  ],
+  "findings": [
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-hardcoded-secret-assignment",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 75,
+      "col": 1,
+      "message": "Hardcoded credential detected. This value is embedded directly in source code and will be exposed in version control.\n",
+      "fix_guidance": "Move this value to an environment variable. Use os.environ.get('VAR_NAME') in your code and document required variables in .env.example. Never commit credentials.\n",
+      "cwe_id": "CWE-798: Use of Hard-coded Credentials",
+      "ai_context": "AI models frequently embed realistic-looking placeholder credentials when generating working examples, which get committed to source control without developers noticing.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "secrets",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-hardcoded-secret-assignment",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 76,
+      "col": 1,
+      "message": "Hardcoded credential detected. This value is embedded directly in source code and will be exposed in version control.\n",
+      "fix_guidance": "Move this value to an environment variable. Use os.environ.get('VAR_NAME') in your code and document required variables in .env.example. Never commit credentials.\n",
+      "cwe_id": "CWE-798: Use of Hard-coded Credentials",
+      "ai_context": "AI models frequently embed realistic-looking placeholder credentials when generating working examples, which get committed to source control without developers noticing.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "secrets",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-hardcoded-secret-assignment",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 77,
+      "col": 1,
+      "message": "Hardcoded credential detected. This value is embedded directly in source code and will be exposed in version control.\n",
+      "fix_guidance": "Move this value to an environment variable. Use os.environ.get('VAR_NAME') in your code and document required variables in .env.example. Never commit credentials.\n",
+      "cwe_id": "CWE-798: Use of Hard-coded Credentials",
+      "ai_context": "AI models frequently embed realistic-looking placeholder credentials when generating working examples, which get committed to source control without developers noticing.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "secrets",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-sqli-fstring",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 126,
+      "col": 5,
+      "message": "SQL injection via string interpolation in execute() call. User-controlled input is directly embedded into the SQL query string.\n",
+      "fix_guidance": "Use parameterized queries instead of string interpolation. Replace cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\") with cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,))\n",
+      "cwe_id": "CWE-89: Improper Neutralization of Special Elements in SQL Command",
+      "ai_context": "AI models default to f-strings for SQL queries because training examples prioritize readability over security, producing vulnerable code that looks clean and idiomatic.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "sqli",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-sqli-fstring",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 169,
+      "col": 5,
+      "message": "SQL injection via string interpolation in execute() call. User-controlled input is directly embedded into the SQL query string.\n",
+      "fix_guidance": "Use parameterized queries instead of string interpolation. Replace cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\") with cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,))\n",
+      "cwe_id": "CWE-89: Improper Neutralization of Special Elements in SQL Command",
+      "ai_context": "AI models default to f-strings for SQL queries because training examples prioritize readability over security, producing vulnerable code that looks clean and idiomatic.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "sqli",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-weak-password-hash",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 170,
+      "col": 83,
+      "message": "Fast hash functions are unsafe for password storage and enable offline brute-force attacks at high guess rates.\n",
+      "fix_guidance": "Use bcrypt or Argon2 for password hashing. Example: bcrypt.hashpw(password.encode(), bcrypt.gensalt()).\n",
+      "cwe_id": "CWE-916: Use of Password Hash With Insufficient Computational Effort",
+      "ai_context": "AI models frequently use hashlib examples from basic tutorials and apply them to passwords even though these hashes are intentionally fast.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "password_hash",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-path-traversal-unsanitized",
+      "severity": "HIGH",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 222,
+      "col": 10,
+      "message": "Path traversal vulnerability. User-controlled input is used directly in a file path without sanitization, allowing directory traversal attacks.\n",
+      "fix_guidance": "Normalize the path with os.path.abspath() and validate it stays within the intended directory using os.path.commonpath(). Example: safe_path = os.path.abspath(os.path.join(base_dir, filename)); assert os.path.commonpath([base_dir, safe_path]) == base_dir\n",
+      "cwe_id": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory",
+      "ai_context": "AI models construct file paths with f-strings or concatenation directly from user input because training examples rarely include path normalization or jail-checking logic.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "path_traversal",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-path-traversal-unsanitized",
+      "severity": "HIGH",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 239,
+      "col": 12,
+      "message": "Path traversal vulnerability. User-controlled input is used directly in a file path without sanitization, allowing directory traversal attacks.\n",
+      "fix_guidance": "Normalize the path with os.path.abspath() and validate it stays within the intended directory using os.path.commonpath(). Example: safe_path = os.path.abspath(os.path.join(base_dir, filename)); assert os.path.commonpath([base_dir, safe_path]) == base_dir\n",
+      "cwe_id": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory",
+      "ai_context": "AI models construct file paths with f-strings or concatenation directly from user input because training examples rarely include path normalization or jail-checking logic.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "path_traversal",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-ssrf-user-controlled-url",
+      "severity": "HIGH",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 256,
+      "col": 20,
+      "message": "Server-Side Request Forgery (SSRF) risk. A URL from user-controlled input is passed directly to an HTTP client without validation.\n",
+      "fix_guidance": "Validate the URL against an allowlist of permitted domains. Block requests to private IP ranges (10.x, 172.16-31.x, 192.168.x, 127.x, 169.254.x). Use urllib.parse.urlparse() to extract the host and compare against the allowlist before making the request.\n",
+      "cwe_id": "CWE-918: Server-Side Request Forgery",
+      "ai_context": "AI models pass user-provided URLs directly to requests.get() because training examples focus on functionality over security, and URL validation boilerplate is rarely included in code snippets.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "ssrf",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-cmdi-shell-true",
+      "severity": "HIGH",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 275,
+      "col": 14,
+      "message": "Command injection risk via subprocess call with shell=True and dynamic command string. User input may be injected into the shell command.\n",
+      "fix_guidance": "Use a list of arguments instead of a shell string. Replace subprocess.run(f\"cmd {user_input}\", shell=True) with subprocess.run([\"cmd\", user_input], shell=False).\n",
+      "cwe_id": "CWE-78: Improper Neutralization of Special Elements in OS Command",
+      "ai_context": "AI models generate subprocess calls with shell=True and f-strings because it mirrors simple shell scripting patterns from training data, ignoring the injection risk of unsanitized interpolation.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "cmdi",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-sqli-fstring",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\app.py",
+      "line": 332,
+      "col": 9,
+      "message": "SQL injection via string interpolation in execute() call. User-controlled input is directly embedded into the SQL query string.\n",
+      "fix_guidance": "Use parameterized queries instead of string interpolation. Replace cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\") with cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,))\n",
+      "cwe_id": "CWE-89: Improper Neutralization of Special Elements in SQL Command",
+      "ai_context": "AI models default to f-strings for SQL queries because training examples prioritize readability over security, producing vulnerable code that looks clean and idiomatic.\n",
+      "file_confidence": 0.4125,
+      "rule_category": "sqli",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-hardcoded-secret-assignment",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\utils.py",
+      "line": 17,
+      "col": 1,
+      "message": "Hardcoded credential detected. This value is embedded directly in source code and will be exposed in version control.\n",
+      "fix_guidance": "Move this value to an environment variable. Use os.environ.get('VAR_NAME') in your code and document required variables in .env.example. Never commit credentials.\n",
+      "cwe_id": "CWE-798: Use of Hard-coded Credentials",
+      "ai_context": "AI models frequently embed realistic-looking placeholder credentials when generating working examples, which get committed to source control without developers noticing.\n",
+      "file_confidence": 0.4425,
+      "rule_category": "secrets",
+      "snippet": "requires login"
+    },
+    {
+      "rule_id": "src.vibeguard.rules.python.vibeguard-python-hardcoded-secret-assignment",
+      "severity": "CRITICAL",
+      "file_path": "tests\\fixtures\\vulnerable_app\\utils.py",
+      "line": 18,
+      "col": 1,
+      "message": "Hardcoded credential detected. This value is embedded directly in source code and will be exposed in version control.\n",
+      "fix_guidance": "Move this value to an environment variable. Use os.environ.get('VAR_NAME') in your code and document required variables in .env.example. Never commit credentials.\n",
+      "cwe_id": "CWE-798: Use of Hard-coded Credentials",
+      "ai_context": "AI models frequently embed realistic-looking placeholder credentials when generating working examples, which get committed to source control without developers noticing.\n",
+      "file_confidence": 0.4425,
+      "rule_category": "secrets",
+      "snippet": "requires login"
+    }
+  ]
+}
