@@ -42,8 +42,10 @@ slopscan scan .
 
 ---
 
+
 ## How it works
 
+```text
 Your code
 │
 ▼
@@ -53,9 +55,9 @@ Your code
 │  tokens                     │    no network, no LLM calls
 └─────────────────────────────┘
 │
-├── score ≥ 0.6  →  FULL scan        (all rules)
+├── score ≥ 0.6   → FULL scan        (all rules)
 ├── score 0.3–0.6 → MEDIUM scan      (Tier 1 rules)
-└── score < 0.3  →  CRITICAL scan    (secrets + SQLi only)
+└── score < 0.3   → CRITICAL scan    (secrets + SQLi only)
 │
 ▼
 ┌─────────────────────────────┐
@@ -65,6 +67,9 @@ Your code
 │
 ▼
 Terminal · SARIF · JSON
+```
+
+
 
 ---
 
